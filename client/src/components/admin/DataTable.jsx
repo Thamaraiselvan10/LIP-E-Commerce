@@ -64,7 +64,7 @@ export default function DataTable({
                                 {columns.map((col) => (
                                     <td
                                         key={col.key}
-                                        className={`px-6 py-4 text-sm ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
+                                        className={`px-6 py-5 text-sm ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                                             }`}
                                     >
                                         {col.render

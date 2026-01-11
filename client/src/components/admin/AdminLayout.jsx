@@ -155,7 +155,7 @@ export default function AdminLayout() {
                             <Bell size={18} />
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
                         </button>
-                        <Link to="/" className="flex items-center gap-2 h-9 px-3 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
+                        <Link to="/" className="flex items-center gap-2 h-9 px-4 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
                             <Home size={14} />
                             <span className="hidden sm:inline">View Site</span>
                         </Link>

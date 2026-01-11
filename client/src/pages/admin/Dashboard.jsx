@@ -124,15 +124,26 @@ export default function Dashboard() {
             label: 'Status',
             render: (val) => {
                 const statusStyles = {
-                    completed: 'bg-green-50 text-green-700 border-green-200',
-                    delivered: 'bg-green-50 text-green-700 border-green-200',
-                    pending: 'bg-amber-50 text-amber-700 border-amber-200',
-                    cancelled: 'bg-red-50 text-red-700 border-red-200',
-                    default: 'bg-blue-50 text-blue-700 border-blue-200'
+                    completed: { background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0' },
+                    delivered: { background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0' },
+                    pending: { background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a' },
+                    processing: { background: '#dbeafe', color: '#1d4ed8', border: '1px solid #bfdbfe' },
+                    shipped: { background: '#e0e7ff', color: '#4338ca', border: '1px solid #c7d2fe' },
+                    cancelled: { background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecaca' },
+                    default: { background: '#dbeafe', color: '#1d4ed8', border: '1px solid #bfdbfe' }
                 };
                 const style = statusStyles[val] || statusStyles.default;
                 return (
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize border ${style}`}>
+                    <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '4px 10px',
+                        borderRadius: '9999px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        textTransform: 'capitalize',
+                        ...style
+                    }}>
                         {val}
                     </span>
                 );
@@ -172,7 +183,7 @@ export default function Dashboard() {
                             <button
                                 key={key}
                                 onClick={() => setDateFilter(key)}
-                                style={{ padding: '10px 16px' }}
+                                style={{ padding: '6px 12px' }}
                                 className={`rounded-lg text-sm font-semibold transition-all ${dateFilter === key
                                     ? 'bg-purple-600 text-white shadow-md'
                                     : 'text-slate-600 hover:bg-white hover:text-slate-800'
@@ -201,7 +212,7 @@ export default function Dashboard() {
             </div>
 
             {/* Bottom Section: Recent Orders & Quick Actions */}
-            <div className="grid lg:grid-cols-3" style={{ gap: '24px' }}>
+            <div className="grid lg:grid-cols-3" style={{ gap: '32px' }}>
                 {/* Recent Orders Table */}
                 <div className="lg:col-span-2">
                     <DataTable
@@ -220,21 +231,21 @@ export default function Dashboard() {
                         <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
 
                         <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-4">
+                            <div className="flex items-center gap-2" style={{ marginBottom: '24px' }}>
                                 <Sparkles className="text-amber-400" size={20} />
                                 <h3 className="font-bold">Quick Actions</h3>
                             </div>
 
-                            <div className="space-y-3">
-                                <Link to="/admin/products" className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <Link to="/admin/products" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all" style={{ padding: '12px 16px' }}>
                                     <Box size={18} className="text-purple-300" />
                                     <span className="text-sm font-medium">Add New Product</span>
                                 </Link>
-                                <Link to="/admin/orders" className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all">
+                                <Link to="/admin/orders" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all" style={{ padding: '12px 16px' }}>
                                     <ShoppingCart size={18} className="text-blue-300" />
                                     <span className="text-sm font-medium">Process Orders</span>
                                 </Link>
-                                <Link to="/admin/announcements" className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all">
+                                <Link to="/admin/announcements" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all" style={{ padding: '12px 16px' }}>
                                     <TrendingUp size={18} className="text-green-300" />
                                     <span className="text-sm font-medium">Create Promo</span>
                                 </Link>
@@ -244,10 +255,10 @@ export default function Dashboard() {
 
                     {/* Store Health */}
                     <div className="bg-white rounded-2xl border border-slate-100" style={{ padding: '20px' }}>
-                        <h3 className="font-bold text-slate-800 mb-4">Store Health</h3>
+                        <h3 className="font-bold text-slate-800" style={{ marginBottom: '9px' }}>Store Health</h3>
 
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div className="flex items-center justify-between" style={{ padding: '8px 0' }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
                                         <Users size={18} className="text-indigo-600" />
@@ -257,7 +268,7 @@ export default function Dashboard() {
                                 <span className="font-bold text-slate-800">{stats.totalUsers}</span>
                             </div>
 
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between" style={{ padding: '8px 0' }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-fuchsia-50 flex items-center justify-center">
                                         <Activity size={18} className="text-fuchsia-600" />
