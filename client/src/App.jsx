@@ -1,7 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
-// Layout Components
+// Layout Components (loaded eagerly as they're always needed)
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import AdminLayout from './components/admin/AdminLayout';
@@ -10,24 +11,36 @@ import AdminLayout from './components/admin/AdminLayout';
 import AnnouncementPopup from './components/common/AnnouncementPopup';
 import ToastBanner from './components/common/ToastBanner';
 
-// Public Pages
-import Home from './pages/Home';
-import Products from './pages/Products';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Orders from './pages/Orders';
-import Login from './pages/Login';
-import Register from './pages/Register';
+// Lazy loaded pages for better performance
+const Home = lazy(() => import('./pages/Home'));
+const Products = lazy(() => import('./pages/Products'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Orders = lazy(() => import('./pages/Orders'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
 
-// Admin Pages
-import Dashboard from './pages/admin/Dashboard';
-import ProductManagement from './pages/admin/ProductManagement';
-import OrderManagement from './pages/admin/OrderManagement';
-import AnnouncementManagement from './pages/admin/AnnouncementManagement';
+// Admin Pages (lazy loaded)
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const ProductManagement = lazy(() => import('./pages/admin/ProductManagement'));
+const OrderManagement = lazy(() => import('./pages/admin/OrderManagement'));
+const AnnouncementManagement = lazy(() => import('./pages/admin/AnnouncementManagement'));
 
 // Auth Store
 import useAuthStore from './store/authStore';
+
+// Loading Spinner Component
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-purple-50/50 to-white">
+      <div className="text-center">
+        <div className="w-12 h-12 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin" style={{ margin: '0 auto 16px', borderWidth: '3px' }}></div>
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 // Protected Route Component
 function ProtectedRoute({ children, adminOnly = false }) {
@@ -50,9 +63,25 @@ function MainLayout({ children }) {
     <div className="flex flex-col min-h-screen">
       <Header />
       <ToastBanner />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <Suspense fallback={<LoadingSpinner />}>
+          {children}
+        </Suspense>
+      </main>
       <Footer />
       <AnnouncementPopup />
+    </div>
+  );
+}
+
+// Static page component for better performance
+function StaticPage({ title }) {
+  return (
+    <div className="flex items-center justify-center" style={{ minHeight: '60vh', padding: '80px 24px' }}>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-gray-900" style={{ marginBottom: '16px' }}>{title}</h1>
+        <p className="text-gray-600">Coming soon...</p>
+      </div>
     </div>
   );
 }
@@ -85,8 +114,16 @@ function App() {
 
       <Routes>
         {/* Auth Routes (no layout) */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <Login />
+          </Suspense>
+        } />
+        <Route path="/register" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <Register />
+          </Suspense>
+        } />
 
         {/* Admin Routes */}
         <Route
@@ -97,10 +134,26 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="products" element={<ProductManagement />} />
-          <Route path="orders" element={<OrderManagement />} />
-          <Route path="announcements" element={<AnnouncementManagement />} />
+          <Route index element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <Dashboard />
+            </Suspense>
+          } />
+          <Route path="products" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <ProductManagement />
+            </Suspense>
+          } />
+          <Route path="orders" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <OrderManagement />
+            </Suspense>
+          } />
+          <Route path="announcements" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <AnnouncementManagement />
+            </Suspense>
+          } />
         </Route>
 
         {/* Public Routes */}
@@ -132,17 +185,26 @@ function App() {
           }
         />
 
-        {/* Static Pages - placeholders for now */}
-        <Route path="/about" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">About Us</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
-        <Route path="/contact" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">Contact Us</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
-        <Route path="/faq" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">FAQ</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
-        <Route path="/privacy" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">Privacy Policy</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
-        <Route path="/terms" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">Terms of Service</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
-        <Route path="/shipping" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">Shipping Info</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
-        <Route path="/returns" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-3xl font-bold">Returns & Refunds</h1><p className="mt-4 text-gray-600">Coming soon...</p></div></MainLayout>} />
+        {/* Static Pages */}
+        <Route path="/about" element={<MainLayout><StaticPage title="About Us" /></MainLayout>} />
+        <Route path="/contact" element={<MainLayout><StaticPage title="Contact Us" /></MainLayout>} />
+        <Route path="/faq" element={<MainLayout><StaticPage title="FAQ" /></MainLayout>} />
+        <Route path="/privacy" element={<MainLayout><StaticPage title="Privacy Policy" /></MainLayout>} />
+        <Route path="/terms" element={<MainLayout><StaticPage title="Terms of Service" /></MainLayout>} />
+        <Route path="/shipping-info" element={<MainLayout><StaticPage title="Shipping Info" /></MainLayout>} />
+        <Route path="/returns-policy" element={<MainLayout><StaticPage title="Returns Policy" /></MainLayout>} />
 
         {/* 404 */}
-        <Route path="*" element={<MainLayout><div className="container mx-auto px-4 py-20 text-center"><h1 className="text-4xl font-bold text-gray-900">404</h1><p className="mt-4 text-gray-600">Page not found</p></div></MainLayout>} />
+        <Route path="*" element={
+          <MainLayout>
+            <div className="flex items-center justify-center" style={{ minHeight: '60vh', padding: '80px 24px' }}>
+              <div className="text-center">
+                <h1 className="text-6xl font-bold text-gray-900" style={{ marginBottom: '16px' }}>404</h1>
+                <p className="text-gray-600">Page not found</p>
+              </div>
+            </div>
+          </MainLayout>
+        } />
       </Routes>
     </Router>
   );

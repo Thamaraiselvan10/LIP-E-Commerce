@@ -62,7 +62,7 @@ export default function Register() {
                     <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl shadow-2xl shadow-amber-500/30 flex items-center justify-center animate-float" style={{ margin: '0 auto 32px' }}>
                         <Package size={40} className="text-white" />
                     </div>
-                    <h2 className="text-3xl font-bold text-white" style={{ marginBottom: '16px' }}>Join PackMart</h2>
+                    <h2 className="text-3xl font-bold text-white" style={{ marginBottom: '16px' }}>Join LIP Materials</h2>
                     <p className="text-purple-200/80" style={{ maxWidth: '320px', margin: '0 auto' }}>
                         Create an account to explore our premium packaging collection and enjoy exclusive offers.
                     </p>
@@ -79,7 +79,7 @@ export default function Register() {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-900 bg-clip-text text-transparent">
-                                PackMart
+                                LIP Materials
                             </span>
                             <span className="text-[10px] text-amber-500 font-medium tracking-wider" style={{ marginTop: '-2px' }}>PACKAGING SUPPLIES</span>
                         </div>

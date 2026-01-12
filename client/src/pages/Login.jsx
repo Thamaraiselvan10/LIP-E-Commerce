@@ -46,7 +46,7 @@ export default function Login() {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-900 bg-clip-text text-transparent">
-                                PackMart
+                                LIP Materials
                             </span>
                             <span className="text-[10px] text-amber-500 font-medium tracking-wider" style={{ marginTop: '-2px' }}>PACKAGING SUPPLIES</span>
                         </div>

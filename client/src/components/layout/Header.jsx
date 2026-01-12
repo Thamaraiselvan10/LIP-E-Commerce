@@ -44,6 +44,8 @@ export default function Header() {
 
     return (
         <header
+            role="banner"
+            aria-label="Main navigation"
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
                 ? 'bg-white/95 backdrop-blur-md shadow-lg shadow-purple-500/5'
                 : 'bg-white'
@@ -58,14 +60,14 @@ export default function Header() {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-900 bg-clip-text text-transparent">
-                                PackMart
+                                LIP Materials
                             </span>
                             <span className="text-[10px] text-amber-500 font-medium tracking-wider" style={{ marginTop: '-2px' }}>PACKAGING SUPPLIES</span>
                         </div>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center" style={{ gap: '4px' }}>
+                    <nav className="hidden lg:flex items-center" style={{ gap: '4px' }} aria-label="Primary navigation">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.to + link.label}
@@ -87,10 +89,11 @@ export default function Header() {
                                     to="/cart"
                                     className="relative text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
                                     style={{ padding: '10px' }}
+                                    aria-label={`Shopping cart with ${cartItemCount} items`}
                                 >
-                                    <ShoppingCart size={22} />
+                                    <ShoppingCart size={22} aria-hidden="true" />
                                     {cartItemCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg">
+                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg" aria-hidden="true">
                                             {cartItemCount}
                                         </span>
                                     )}
@@ -119,8 +122,9 @@ export default function Header() {
                                         className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                                         style={{ padding: '8px' }}
                                         title="Logout"
+                                        aria-label="Logout from your account"
                                     >
-                                        <LogOut size={18} />
+                                        <LogOut size={18} aria-hidden="true" />
                                     </button>
                                 </div>
                             </>
@@ -149,8 +153,10 @@ export default function Header() {
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className="lg:hidden text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
                         style={{ padding: '8px' }}
+                        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={isMenuOpen}
                     >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        {isMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
                     </button>
                 </div>
 

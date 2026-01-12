@@ -5,7 +5,7 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-gradient-to-b from-gray-900 via-gray-900 to-black text-gray-300 relative overflow-hidden">
+        <footer role="contentinfo" aria-label="Site footer" className="bg-gradient-to-b from-gray-900 via-gray-900 to-black text-gray-300 relative overflow-hidden">
             {/* Decorative Elements */}
             <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
@@ -23,12 +23,13 @@ export default function Footer() {
                                 <input
                                     type="email"
                                     placeholder="Enter your email"
+                                    aria-label="Email address for newsletter"
                                     className="flex-1 md:w-64 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
                                     style={{ padding: '12px 16px' }}
                                 />
-                                <button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-semibold rounded-xl whitespace-nowrap transition-all" style={{ padding: '12px 20px' }}>
+                                <button aria-label="Subscribe to newsletter" className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-semibold rounded-xl whitespace-nowrap transition-all" style={{ padding: '12px 20px' }}>
                                     Subscribe
-                                    <ArrowRight size={18} style={{ display: 'inline', marginLeft: '8px' }} />
+                                    <ArrowRight size={18} style={{ display: 'inline', marginLeft: '8px' }} aria-hidden="true" />
                                 </button>
                             </div>
                         </div>
@@ -45,7 +46,7 @@ export default function Footer() {
                                 <Package className="text-white" size={20} />
                             </div>
                             <div>
-                                <span className="text-xl font-bold text-white">PackMart</span>
+                                <span className="text-xl font-bold text-white">LIP Materials</span>
                             </div>
                         </Link>
                         <p className="text-gray-400 leading-relaxed" style={{ marginBottom: '24px' }}>
@@ -138,7 +139,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="border-t border-gray-800/50 flex flex-col md:flex-row items-center justify-between" style={{ marginTop: '64px', paddingTop: '32px', gap: '16px' }}>
                     <p className="text-gray-500 text-sm">
-                        © {currentYear} PackMart. All rights reserved.
+                        © {currentYear} LIP Materials. All rights reserved.
                     </p>
                     <div className="flex items-center text-sm text-gray-500" style={{ gap: '24px' }}>
                         <Link to="/privacy" className="hover:text-purple-400 transition-colors">Privacy</Link>
