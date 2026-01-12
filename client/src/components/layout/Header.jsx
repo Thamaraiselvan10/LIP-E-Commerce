@@ -42,12 +42,16 @@ export default function Header() {
         { to: '/contact', label: 'Contact' },
     ];
 
+    const textColor = isScrolled ? 'text-gray-700' : 'text-white';
+    const hoverColor = isScrolled ? 'hover:text-purple-600' : 'hover:text-amber-400';
+    const iconBg = isScrolled ? 'bg-purple-50' : 'bg-white/10';
+
     return (
         <header
             role="banner"
             aria-label="Main navigation"
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-                ? 'bg-luxury-900/90 backdrop-blur-md shadow-lg shadow-black/10'
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+                ? 'bg-white shadow-md'
                 : 'bg-transparent'
                 }`}
         >
@@ -59,7 +63,7 @@ export default function Header() {
                             <Package className="text-white" size={20} />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-900 bg-clip-text text-transparent">
+                            <span className={`text-xl font-bold bg-clip-text text-transparent ${isScrolled ? 'bg-gradient-to-r from-purple-700 to-purple-900' : 'bg-gradient-to-r from-white to-purple-200'}`}>
                                 LIP Materials
                             </span>
                             <span className="text-[10px] text-amber-500 font-medium tracking-wider" style={{ marginTop: '-2px' }}>PACKAGING SUPPLIES</span>
@@ -72,11 +76,11 @@ export default function Header() {
                             <Link
                                 key={link.to + link.label}
                                 to={link.to}
-                                className="relative text-gray-600 hover:text-purple-600 font-medium transition-colors group"
+                                className={`relative ${textColor} ${hoverColor} font-medium transition-colors group`}
                                 style={{ padding: '8px 16px' }}
                             >
                                 {link.label}
-                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-gold-400 to-gold-600 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
+                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-400 to-amber-600 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
                             </Link>
                         ))}
                     </nav>
@@ -87,7 +91,7 @@ export default function Header() {
                             <>
                                 <Link
                                     to="/cart"
-                                    className="relative text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                                    className={`relative ${textColor} ${hoverColor} ${isScrolled ? 'hover:bg-purple-50' : 'hover:bg-white/10'} rounded-xl transition-all`}
                                     style={{ padding: '10px' }}
                                     aria-label={`Shopping cart with ${cartItemCount} items`}
                                 >
@@ -110,16 +114,16 @@ export default function Header() {
                                     </Link>
                                 )}
 
-                                <div className="flex items-center border-l border-gray-200" style={{ gap: '8px', paddingLeft: '12px' }}>
-                                    <Link to="/profile" className="flex items-center text-gray-600 hover:text-purple-600 transition-colors" style={{ gap: '8px' }}>
-                                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
-                                            <User size={18} className="text-purple-600" />
+                                <div className={`flex items-center ${isScrolled ? 'border-gray-200' : 'border-white/20'} border-l`} style={{ gap: '8px', paddingLeft: '12px' }}>
+                                    <Link to="/profile" className={`flex items-center ${textColor} ${hoverColor} transition-colors`} style={{ gap: '8px' }}>
+                                        <div className={`w-9 h-9 rounded-xl ${isScrolled ? 'bg-purple-100' : 'bg-white/10'} flex items-center justify-center`}>
+                                            <User size={18} className={isScrolled ? 'text-purple-600' : 'text-white'} />
                                         </div>
                                         <span className="font-medium text-sm">{user?.name?.split(' ')[0]}</span>
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                        className={`text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all`}
                                         style={{ padding: '8px' }}
                                         title="Logout"
                                         aria-label="Logout from your account"
@@ -132,7 +136,7 @@ export default function Header() {
                             <div className="flex items-center" style={{ gap: '12px' }}>
                                 <Link
                                     to="/login"
-                                    className="text-gray-600 hover:text-purple-600 font-medium transition-colors"
+                                    className={`${textColor} ${hoverColor} font-medium transition-colors`}
                                     style={{ padding: '8px 16px' }}
                                 >
                                     Sign In
@@ -151,7 +155,7 @@ export default function Header() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="lg:hidden text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                        className={`lg:hidden ${textColor} ${hoverColor} ${isScrolled ? 'hover:bg-purple-50' : 'hover:bg-white/10'} rounded-xl transition-all`}
                         style={{ padding: '8px' }}
                         aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                         aria-expanded={isMenuOpen}
