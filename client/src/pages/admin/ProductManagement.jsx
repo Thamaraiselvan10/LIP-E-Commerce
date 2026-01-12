@@ -127,8 +127,24 @@ export default function ProductManagement() {
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this product?')) return;
         try {
-            await productsAPI.delete(id);
-            toast.success('Product deleted');
+            const response = await productsAPI.delete(id);
+
+            // Check if it was a soft delete (archived)
+            if (response.data.note) {
+                toast.success(response.data.message);
+                toast(response.data.note, {
+                    icon: '📂',
+                    duration: 5000,
+                    style: {
+                        borderRadius: '10px',
+                        background: '#333',
+                        color: '#fff',
+                    },
+                });
+            } else {
+                toast.success('Product deleted permanently');
+            }
+
             loadProducts();
         } catch (error) {
             toast.error('Failed to delete');

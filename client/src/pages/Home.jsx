@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    ArrowRight, Package, Leaf, Palette,
-    Star, Shield, Truck, Sparkles, CheckCircle,
-    Zap, Award, Clock, Play
-} from 'lucide-react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Package, Box, Truck, Star, Shield, Zap, Award, ChevronRight, ShoppingBag } from 'lucide-react';
 import { productsAPI } from '../services/api';
 import ProductCard from '../components/products/ProductCard';
 
@@ -35,8 +30,8 @@ export default function Home() {
 
     const loadData = async () => {
         try {
-            const productsRes = await productsAPI.getAll({ limit: 6 });
-            setProducts(productsRes.data.products.slice(0, 6));
+            const productsRes = await productsAPI.getAll({ limit: 8 });
+            setProducts(productsRes.data.products.slice(0, 8));
         } catch (error) {
             console.error('Failed to load data:', error);
         } finally {
@@ -44,241 +39,138 @@ export default function Home() {
         }
     };
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { type: "spring", stiffness: 100, damping: 12 }
-        },
-    };
-
-    const features = [
-        {
-            icon: Package,
-            title: 'Premium Quality',
-            description: 'Exquisite materials crafted for the discerning brand.',
-            color: 'bg-violet-500',
-        },
-        {
-            icon: Leaf,
-            title: 'Eco-Conscious',
-            description: 'Sustainable solutions for a greener tomorrow.',
-            color: 'bg-emerald-500',
-        },
-        {
-            icon: Palette,
-            title: 'Bespoke Design',
-            description: 'Tailored packaging that tells your unique story.',
-            color: 'bg-amber-500',
-        },
-        {
-            icon: Zap,
-            title: 'Rapid Delivery',
-            description: 'Swift fulfillment without compromising excellence.',
-            color: 'bg-blue-500',
-        },
+    const categories = [
+        { name: 'Cardboard Boxes', icon: '📦', desc: 'All sizes available', color: 'from-purple-500 to-indigo-500', link: '/products?category=boxes' },
+        { name: 'Courier Covers', icon: '📮', desc: 'Amazon, Flipkart & more', color: 'from-amber-500 to-yellow-500', link: '/products?category=covers' },
+        { name: 'Packaging Tapes', icon: '🎗️', desc: 'Branded & Plain', color: 'from-purple-600 to-purple-700', link: '/products?category=tapes' },
     ];
 
-    const stats = [
-        { value: '500+', label: 'Global Brands', icon: Award },
-        { value: '10M+', label: 'Units Shipped', icon: Package },
-        { value: '48hr', label: 'Turnaround', icon: Clock },
-        { value: '99.9%', label: 'Satisfaction', icon: Star },
+    const benefits = [
+        { icon: Zap, title: 'Fast Delivery', desc: 'Same day dispatch for orders before 2 PM', color: 'bg-amber-500' },
+        { icon: Shield, title: 'Quality Assured', desc: 'Premium quality packaging materials', color: 'bg-purple-500' },
+        { icon: Award, title: 'Best Prices', desc: 'Wholesale rates for retailers', color: 'bg-amber-600' },
+        { icon: Truck, title: 'Pan India Shipping', desc: 'We deliver across all states', color: 'bg-purple-600' },
+    ];
+
+    const boxSizes = ['3x3', '4x4', '5x5', '6x6', '8x8', '10x10', '12x12', '14x14'];
+
+    const brandedCovers = [
+        { name: 'Amazon', color: 'bg-[#FF9900]' },
+        { name: 'Flipkart', color: 'bg-[#2874F0]' },
+        { name: 'Meesho', color: 'bg-[#F43397]' },
+        { name: 'Myntra', color: 'bg-[#FF3E6C]' },
     ];
 
     const testimonials = [
-        {
-            quote: "LIP Packaging transformed our product presentation. The quality is unmatched.",
-            author: "Sarah Chen",
-            role: "Founder, Luxe Cosmetics",
-            initials: "SC",
-        },
-        {
-            quote: "Their custom designs helped us stand out in a crowded market. Truly exceptional.",
-            author: "Michael Torres",
-            role: "CEO, Bella Beauty",
-            initials: "MT",
-        },
-        {
-            quote: "Fast, reliable, and the packaging quality exceeded our expectations.",
-            author: "Emma Williams",
-            role: "Director, Glow Labs",
-            initials: "EW",
-        },
-    ];
-
-    const processSteps = [
-        { step: '01', title: 'Consult', desc: 'Share your vision with our experts' },
-        { step: '02', title: 'Design', desc: 'We craft bespoke packaging concepts' },
-        { step: '03', title: 'Produce', desc: 'Precision manufacturing at scale' },
-        { step: '04', title: 'Deliver', desc: 'Global shipping, on time, every time' },
+        { name: 'Rajesh Kumar', role: 'E-commerce Seller', text: 'Best quality boxes at wholesale prices. My packaging costs reduced by 30%!', avatar: 'R', rating: 5 },
+        { name: 'Priya Sharma', role: 'Online Retailer', text: 'Fast delivery and excellent quality courier covers. Highly recommended!', avatar: 'P', rating: 5 },
+        { name: 'Amit Patel', role: 'Business Owner', text: 'One-stop shop for all packaging needs. Great customer service!', avatar: 'A', rating: 5 },
     ];
 
     return (
-        <div className="min-h-screen bg-[#0a0612] text-white">
-            {/* Background */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px]" />
-                <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-amber-500/8 rounded-full blur-[120px]" />
-            </div>
+        <div className="min-h-screen bg-white">
+            {/* Hero Section */}
+            <section className="relative min-h-screen flex items-center overflow-hidden">
+                {/* Background Gradient - Purple & Gold */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900" aria-hidden="true"></div>
 
-            {/* ===== HERO SECTION ===== */}
-            <section ref={heroRef} className="relative min-h-screen flex items-center pt-24 pb-16">
-                <motion.div
-                    style={{ y: heroY, opacity: heroOpacity }}
-                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10"
-                >
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+                {/* Simplified decorative elements for mobile performance */}
+                <div className="absolute inset-0 overflow-hidden hidden md:block" aria-hidden="true">
+                    <div className="absolute w-96 h-96 bg-amber-400/20 rounded-full" style={{ top: '10%', left: '5%', filter: 'blur(60px)' }}></div>
+                    <div className="absolute w-80 h-80 bg-purple-500/30 rounded-full" style={{ bottom: '10%', right: '10%', filter: 'blur(60px)' }}></div>
+                </div>
+
+                {/* Grid Pattern - hidden on mobile */}
+                <div className="absolute inset-0 opacity-10 hidden md:block" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} aria-hidden="true"></div>
+
+                <div className="relative z-10 w-full" style={{ maxWidth: '1400px', margin: '0 auto', padding: '120px 32px 80px' }}>
+                    <div className="grid lg:grid-cols-2 items-center" style={{ gap: '64px' }}>
                         {/* Left Content */}
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="text-center lg:text-left"
-                        >
+                        <div className="text-center lg:text-left">
                             {/* Badge */}
-                            <motion.div
-                                variants={itemVariants}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm mb-6"
-                            >
-                                <span className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
-                                <span className="text-gold-400 font-medium">AI-Powered Premium Packaging</span>
-                            </motion.div>
+                            <div className="inline-flex items-center bg-white/10 border border-white/20 rounded-full" style={{ gap: '8px', padding: '8px 20px', marginBottom: '32px' }}>
+                                <span className="w-2 h-2 bg-amber-400 rounded-full"></span>
+                                <span className="text-purple-200 text-sm font-medium">Wholesale Packaging Supplies</span>
+                            </div>
 
-                            {/* Headline */}
-                            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                                Packaging That
-                                <span className="block bg-gradient-to-r from-gold-400 via-amber-400 to-gold-500 bg-clip-text text-transparent">
-                                    Speaks Luxury
+                            <h1 className="text-white font-bold leading-tight" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', marginBottom: '24px' }}>
+                                Premium Packaging
+                                <span className="block bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-400 bg-clip-text text-transparent">
+                                    For Your Business
                                 </span>
                             </motion.h1>
 
-                            {/* Description */}
-                            <motion.p variants={itemVariants} className="text-lg text-gray-400 mb-8 max-w-lg mx-auto lg:mx-0">
-                                Transform your lip products with exquisite packaging. From concept to delivery, we craft premium solutions that define brands.
-                            </motion.p>
+                            <p className="text-purple-200/90 text-lg max-w-lg" style={{ marginBottom: '40px', lineHeight: '1.8' }}>
+                                Quality cardboard boxes, branded courier covers, and packaging tapes at wholesale prices.
+                                Perfect for e-commerce sellers, retailers, and businesses.
+                            </p>
 
-                            {/* CTAs */}
-                            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            {/* CTA Buttons */}
+                            <div className="flex flex-wrap justify-center lg:justify-start" style={{ gap: '16px', marginBottom: '48px' }}>
                                 <Link
                                     to="/products"
-                                    className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-500 to-amber-500 text-[#0a0612] font-bold rounded-xl hover:shadow-lg hover:shadow-gold-500/25 transition-all"
+                                    className="group inline-flex items-center bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 font-bold rounded-full shadow-lg shadow-amber-500/30 transition-all"
+                                    style={{ gap: '8px', padding: '18px 36px' }}
                                 >
-                                    Explore Collection
-                                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                    Shop Now
+                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 <Link
                                     to="/contact"
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-medium hover:bg-white/10 transition-all"
+                                    className="inline-flex items-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold rounded-full border border-white/30 transition-all"
+                                    style={{ gap: '8px', padding: '18px 36px' }}
                                 >
-                                    <Play size={16} className="text-gold-400" />
-                                    Watch Demo
+                                    Get Bulk Quote
                                 </Link>
                             </motion.div>
 
-                            {/* Trust Badges */}
-                            <motion.div variants={itemVariants} className="mt-10 pt-6 border-t border-white/10">
-                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6">
-                                    {[
-                                        { icon: Shield, text: 'Secure Payments' },
-                                        { icon: Truck, text: 'Global Shipping' },
-                                        { icon: Star, text: '5-Star Rated' },
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-sm text-gray-400">
-                                            <item.icon size={16} className="text-gold-500" />
-                                            <span>{item.text}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        </motion.div>
+                            {/* Stats Row */}
+                            <div className="flex flex-wrap justify-center lg:justify-start" style={{ gap: '40px' }}>
+                                {[
+                                    { value: '5000+', label: 'Happy Customers' },
+                                    { value: '50+', label: 'Products' },
+                                    { value: '4.9★', label: 'Rating' },
+                                ].map((stat, i) => (
+                                    <div key={i} className="text-center lg:text-left">
+                                        <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
+                                        <div className="text-purple-300 text-sm">{stat.label}</div>
+                                    </div>
 
-                        {/* Right: Dashboard Preview */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 40 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6, delay: 0.3 }}
-                            className="relative hidden lg:block"
-                        >
+                        {/* Right - Product Showcase */}
+                        <div className="hidden lg:flex items-center justify-center relative">
                             <div className="relative">
-                                {/* Main Card */}
-                                <div className="bg-[#1a1225]/80 backdrop-blur-xl rounded-2xl border border-white/10 p-5 shadow-2xl">
-                                    {/* Header */}
-                                    <div className="flex items-center justify-between mb-5">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-                                                <Sparkles size={16} className="text-[#0a0612]" />
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-semibold text-white">LIP Dashboard</div>
-                                                <div className="text-xs text-gray-500">Enterprise</div>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-1.5">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                                            <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                                            <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                                {/* Glow Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-purple-500/20 rounded-3xl blur-3xl scale-110"></div>
+
+                                {/* Product Grid */}
+                                <div className="relative bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 overflow-hidden" style={{ padding: '32px' }}>
+                                    <div className="grid grid-cols-2" style={{ gap: '16px' }}>
+                                        {categories.map((cat, i) => (
+                                            <Link
+                                                key={i}
+                                                to={cat.link}
+                                                className="bg-white/10 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center hover:bg-white/20 transition-all cursor-pointer"
+                                                style={{ padding: '28px', aspectRatio: i === 2 ? 'auto' : '1' }}
+                                            >
+                                                <span style={{ fontSize: '40px', marginBottom: '12px' }}>{cat.icon}</span>
+                                                <span className="text-white font-semibold text-sm">{cat.name}</span>
+                                            </Link>
+                                        ))}
+                                        <div className="bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex flex-col items-center justify-center" style={{ padding: '28px' }}>
+                                            <span className="text-3xl font-bold text-purple-900">50+</span>
+                                            <span className="text-purple-800 text-sm font-medium">Products</span>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Order Card */}
-                                    <div className="p-4 bg-white/5 rounded-xl border border-white/5 mb-4">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-lg bg-violet-500/20 flex items-center justify-center">
-                                                    <Package size={16} className="text-violet-400" />
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-medium text-white">Order #LIP-2847</div>
-                                                    <div className="text-xs text-gold-400 flex items-center gap-1">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-gold-400" />
-                                                        In Production
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-sm font-bold text-white">₹24,500</div>
-                                                <div className="text-xs text-gray-500">1,000 units</div>
-                                            </div>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                            <motion.div
-                                                className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full"
-                                                initial={{ width: "0%" }}
-                                                animate={{ width: "75%" }}
-                                                transition={{ duration: 1.2, delay: 0.8 }}
-                                            />
-                                        </div>
+                                {/* Floating Badge */}
+                                <div className="absolute bg-white rounded-2xl shadow-2xl flex items-center" style={{ gap: '12px', padding: '16px 20px', top: '-20px', right: '-20px' }}>
+                                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                        <Truck className="text-purple-600" size={20} />
                                     </div>
-
-                                    {/* Stats */}
-                                    <div className="grid grid-cols-2 gap-3 mb-4">
-                                        <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-                                            <div className="text-xl font-bold text-white">156</div>
-                                            <div className="text-xs text-gray-400">Orders This Month</div>
-                                        </div>
-                                        <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-                                            <div className="text-xl font-bold text-emerald-400">+28%</div>
-                                            <div className="text-xs text-gray-400">Growth Rate</div>
-                                        </div>
-                                    </div>
-
-                                    {/* CTA */}
-                                    <div className="p-4 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 flex items-center justify-between cursor-pointer hover:opacity-90 transition-opacity">
-                                        <div>
-                                            <div className="text-[#0a0612] font-bold">New Collection</div>
-                                            <div className="text-[#0a0612]/70 text-sm">Luxury Matte Series</div>
-                                        </div>
-                                        <ArrowRight size={18} className="text-[#0a0612]" />
+                                    <div>
+                                        <div className="text-sm font-bold text-gray-800">Free Shipping</div>
+                                        <div className="text-xs text-gray-500">Orders above ₹2000</div>
                                     </div>
                                 </div>
 
@@ -323,224 +215,248 @@ export default function Home() {
                 </motion.div>
             </section>
 
-            {/* ===== STATS SECTION ===== */}
-            <section className="py-16 relative z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {stats.map((stat, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-5 rounded-xl bg-white/5 border border-white/5 text-center hover:bg-white/8 transition-colors"
-                            >
-                                <stat.icon className="mx-auto mb-2 text-gold-500" size={22} />
-                                <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
-                                <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
-                            </motion.div>
+                {/* Wave Divider */}
+                <div className="absolute bottom-0 left-0 right-0">
+                    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" style={{ width: '100%', height: '120px' }}>
+                        <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H0Z" fill="white" />
+                    </svg>
+                </div>
+            </section>
+
+            {/* Benefits Bar */}
+            <section className="bg-white relative" style={{ marginTop: '-1px' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '40px 32px' }}>
+                    <div className="grid grid-cols-2 lg:grid-cols-4" style={{ gap: '24px' }}>
+                        {benefits.map((benefit, i) => (
+                            <div key={i} className="flex items-center" style={{ gap: '16px' }}>
+                                <div className={`w-12 h-12 ${benefit.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                                    <benefit.icon className="text-white" size={24} />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-gray-800">{benefit.title}</div>
+                                    <div className="text-sm text-gray-500">{benefit.desc}</div>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* ===== FEATURES SECTION ===== */}
-            <section className="py-20 relative z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-12"
-                    >
-                        <span className="inline-block px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-xs font-medium mb-3">
-                            Why Choose Us
+            {/* Categories Section */}
+            <section className="bg-purple-50" style={{ padding: '100px 0' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px' }}>
+                    {/* Section Header */}
+                    <div className="text-center" style={{ marginBottom: '64px' }}>
+                        <span className="inline-block bg-purple-100 text-purple-600 text-sm font-bold uppercase tracking-wider rounded-full" style={{ padding: '8px 20px', marginBottom: '16px' }}>
+                            Our Products
                         </span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Crafted for Excellence</h2>
-                        <p className="text-gray-400 max-w-xl mx-auto">
-                            Where precision engineering meets artistic vision.
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ marginBottom: '16px' }}>
+                            Shop by Category
+                        </h2>
+                        <p className="text-gray-600 max-w-2xl" style={{ margin: '0 auto' }}>
+                            Quality packaging materials for all your shipping and storage needs
                         </p>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                        {features.map((feature, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="group p-6 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all"
-                            >
-                                <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
-                                    <feature.icon className="text-white" size={22} />
-                                </div>
-                                <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                                <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
-                            </motion.div>
-                        ))}
+                    {/* Categories Grid */}
+                    <div className="grid md:grid-cols-3" style={{ gap: '32px' }}>
+                        {/* Cardboard Boxes */}
+                        <Link
+                            to="/products?category=boxes"
+                            className="group relative bg-white rounded-3xl border border-gray-100 hover:border-purple-200 hover:shadow-xl hover:shadow-purple-500/10 transition-all overflow-hidden"
+                            style={{ padding: '40px' }}
+                        >
+                            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform" style={{ marginBottom: '24px', fontSize: '40px' }}>
+                                📦
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-800" style={{ marginBottom: '8px' }}>Cardboard Boxes</h3>
+                            <p className="text-gray-500" style={{ marginBottom: '16px' }}>All sizes available for shipping & storage</p>
+                            <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                                {boxSizes.slice(0, 4).map((size, i) => (
+                                    <span key={i} className="bg-purple-50 text-purple-700 text-xs font-medium rounded-lg" style={{ padding: '4px 10px' }}>
+                                        {size} inch
+                                    </span>
+                                ))}
+                                <span className="bg-gray-100 text-gray-600 text-xs font-medium rounded-lg" style={{ padding: '4px 10px' }}>
+                                    +more
+                                </span>
+                            </div>
+                            <div className="absolute bottom-6 right-6 w-10 h-10 bg-gray-100 group-hover:bg-purple-500 rounded-full flex items-center justify-center transition-all">
+                                <ChevronRight size={20} className="text-gray-400 group-hover:text-white transition-colors" />
+                            </div>
+                        </Link>
+
+                        {/* Courier Covers */}
+                        <Link
+                            to="/products?category=covers"
+                            className="group relative bg-white rounded-3xl border border-gray-100 hover:border-amber-200 hover:shadow-xl hover:shadow-amber-500/10 transition-all overflow-hidden"
+                            style={{ padding: '40px' }}
+                        >
+                            <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform" style={{ marginBottom: '24px', fontSize: '40px' }}>
+                                📮
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-800" style={{ marginBottom: '8px' }}>Courier Covers</h3>
+                            <p className="text-gray-500" style={{ marginBottom: '16px' }}>Branded & plain courier bags</p>
+                            <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                                {brandedCovers.map((brand, i) => (
+                                    <span key={i} className={`${brand.color} text-white text-xs font-medium rounded-lg`} style={{ padding: '4px 10px' }}>
+                                        {brand.name}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="absolute bottom-6 right-6 w-10 h-10 bg-gray-100 group-hover:bg-amber-500 rounded-full flex items-center justify-center transition-all">
+                                <ChevronRight size={20} className="text-gray-400 group-hover:text-white transition-colors" />
+                            </div>
+                        </Link>
+
+                        {/* Tapes */}
+                        <Link
+                            to="/products?category=tapes"
+                            className="group relative bg-white rounded-3xl border border-gray-100 hover:border-purple-200 hover:shadow-xl hover:shadow-purple-500/10 transition-all overflow-hidden"
+                            style={{ padding: '40px' }}
+                        >
+                            <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform" style={{ marginBottom: '24px', fontSize: '40px' }}>
+                                🎗️
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-800" style={{ marginBottom: '8px' }}>Packaging Tapes</h3>
+                            <p className="text-gray-500" style={{ marginBottom: '16px' }}>Branded & colored tapes</p>
+                            <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                                {['Amazon', 'Flipkart', 'Black', 'White'].map((tape, i) => (
+                                    <span key={i} className="bg-purple-50 text-purple-700 text-xs font-medium rounded-lg" style={{ padding: '4px 10px' }}>
+                                        {tape}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="absolute bottom-6 right-6 w-10 h-10 bg-gray-100 group-hover:bg-purple-600 rounded-full flex items-center justify-center transition-all">
+                                <ChevronRight size={20} className="text-gray-400 group-hover:text-white transition-colors" />
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </section>
 
-            {/* ===== PROCESS SECTION ===== */}
-            <section className="py-20 relative z-10 bg-white/[0.02]">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-12"
-                    >
-                        <span className="inline-block px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-medium mb-3">
-                            Our Process
-                        </span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">From Vision to Reality</h2>
-                        <p className="text-gray-400 max-w-xl mx-auto">
-                            A seamless journey to your perfect packaging.
-                        </p>
-                    </motion.div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {processSteps.map((item, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="text-center lg:text-left"
-                            >
-                                <div className="text-5xl font-bold text-white/10 mb-2">{item.step}</div>
-                                <h3 className="text-lg font-bold text-white mb-1">{item.title}</h3>
-                                <p className="text-gray-500 text-sm">{item.desc}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== TESTIMONIALS SECTION ===== */}
-            <section className="py-20 relative z-10">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-10"
-                    >
-                        <span className="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-3">
-                            Testimonials
-                        </span>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">Loved by Brands</h2>
-                    </motion.div>
-
-                    <div className="relative min-h-[180px]">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={activeTestimonial}
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -15 }}
-                                transition={{ duration: 0.4 }}
-                                className="text-center"
-                            >
-                                <p className="text-xl text-gray-300 mb-6 italic leading-relaxed">
-                                    "{testimonials[activeTestimonial].quote}"
-                                </p>
-                                <div className="flex items-center justify-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-[#0a0612] font-bold text-sm">
-                                        {testimonials[activeTestimonial].initials}
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="text-white font-medium text-sm">{testimonials[activeTestimonial].author}</div>
-                                        <div className="text-gray-500 text-xs">{testimonials[activeTestimonial].role}</div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-
-                    <div className="flex justify-center gap-2 mt-6">
-                        {testimonials.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setActiveTestimonial(i)}
-                                className={`h-2 rounded-full transition-all ${i === activeTestimonial ? 'bg-gold-500 w-6' : 'bg-white/20 w-2 hover:bg-white/30'}`}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ===== PRODUCTS SECTION ===== */}
-            <section className="py-20 relative z-10 bg-black/20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+            {/* Featured Products */}
+            <section className="bg-white" style={{ padding: '100px 0' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px' }}>
+                    {/* Section Header */}
+                    <div className="flex flex-col md:flex-row items-start md:items-end justify-between" style={{ marginBottom: '48px' }}>
                         <div>
-                            <span className="inline-block px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-xs font-medium mb-2">
-                                Featured
+                            <span className="inline-block bg-amber-100 text-amber-600 text-sm font-bold uppercase tracking-wider rounded-full" style={{ padding: '8px 20px', marginBottom: '16px' }}>
+                                Best Sellers
                             </span>
-                            <h2 className="text-3xl font-bold text-white">Curated Collection</h2>
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                                Popular Products
+                            </h2>
                         </div>
                         <Link
                             to="/products"
-                            className="group flex items-center gap-2 text-gold-400 hover:text-white transition-colors text-sm font-medium"
+                            className="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold group"
+                            style={{ gap: '8px', marginTop: '16px' }}
                         >
                             View All Products
                             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
 
+                    {/* Products Grid */}
                     {loading ? (
-                        <div className="flex justify-center py-16">
-                            <div className="w-10 h-10 border-3 border-gold-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="flex justify-center" style={{ padding: '80px 0' }}>
+                            <div className="spinner"></div>
                         </div>
                     ) : products.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {products.map((product) => (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style={{ gap: '24px' }}>
+                            {products.slice(0, 8).map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-16 text-gray-500">
-                            No products available yet.
+                        <div className="text-center text-gray-500 bg-gray-50 rounded-3xl" style={{ padding: '80px' }}>
+                            <ShoppingBag size={48} className="text-gray-300" style={{ margin: '0 auto 16px' }} />
+                            <p className="text-lg font-medium">No products available yet.</p>
                         </div>
                     )}
                 </div>
             </section>
 
-            {/* ===== CTA SECTION ===== */}
-            <section className="py-24 relative z-10">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                            Ready to Elevate<br />Your Brand?
+            {/* Testimonials Section */}
+            <section className="bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 relative overflow-hidden" style={{ padding: '100px 0' }}>
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+
+                <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px' }} className="relative z-10">
+                    <div className="text-center" style={{ marginBottom: '64px' }}>
+                        <span className="inline-block bg-white/10 text-purple-200 text-sm font-bold uppercase tracking-wider rounded-full backdrop-blur-sm" style={{ padding: '8px 20px', marginBottom: '16px' }}>
+                            Testimonials
+                        </span>
+                        <h2 className="text-3xl md:text-4xl font-bold text-white" style={{ marginBottom: '16px' }}>
+                            What Our Customers Say
                         </h2>
-                        <p className="text-lg text-gray-400 mb-8 max-w-xl mx-auto">
-                            Join 500+ brands who trust LIP Packaging for their premium packaging needs.
+                        <p className="text-purple-300 max-w-2xl" style={{ margin: '0 auto' }}>
+                            Trusted by thousands of e-commerce sellers and businesses across India
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link
-                                to="/register"
-                                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-gold-500 to-amber-500 text-[#0a0612] font-bold rounded-xl hover:shadow-lg hover:shadow-gold-500/25 transition-all"
-                            >
-                                Get Started Free
-                                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                            <Link
-                                to="/contact"
-                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 rounded-xl text-white font-medium hover:bg-white/10 transition-all"
-                            >
-                                Talk to Sales
-                            </Link>
+                    </div>
+
+                    <div className="grid md:grid-cols-3" style={{ gap: '24px' }}>
+                        {testimonials.map((testimonial, i) => (
+                            <div key={i} className="bg-white/10 backdrop-blur-md rounded-3xl border border-white/10 hover:bg-white/15 transition-all" style={{ padding: '32px' }}>
+                                {/* Stars */}
+                                <div className="flex" style={{ marginBottom: '20px', gap: '4px' }}>
+                                    {[...Array(testimonial.rating)].map((_, j) => (
+                                        <Star key={j} size={18} className="text-amber-400 fill-amber-400" />
+                                    ))}
+                                </div>
+                                <p className="text-white/90 leading-relaxed" style={{ marginBottom: '24px' }}>
+                                    "{testimonial.text}"
+                                </p>
+                                <div className="flex items-center" style={{ gap: '12px' }}>
+                                    <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center text-purple-900 font-bold">
+                                        {testimonial.avatar}
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-white">{testimonial.name}</div>
+                                        <div className="text-sm text-purple-300">{testimonial.role}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="bg-white" style={{ padding: '100px 0' }}>
+                <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 32px', textAlign: 'center' }}>
+                    <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-3xl relative overflow-hidden" style={{ padding: '80px 48px' }}>
+                        {/* Decorative Elements */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/30 rounded-full blur-3xl"></div>
+
+                        <div className="relative z-10">
+                            <h2 className="text-3xl md:text-4xl font-bold text-white" style={{ marginBottom: '16px' }}>
+                                Need Bulk Packaging?
+                            </h2>
+                            <p className="text-purple-200 text-lg max-w-lg" style={{ margin: '0 auto 32px' }}>
+                                Get special wholesale prices for large orders. Contact us for custom quotes and exclusive deals.
+                            </p>
+                            <div className="flex flex-wrap justify-center" style={{ gap: '16px' }}>
+                                <Link
+                                    to="/products"
+                                    className="inline-flex items-center bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 font-bold rounded-full shadow-lg transition-all"
+                                    style={{ gap: '8px', padding: '18px 36px' }}
+                                >
+                                    Browse Products
+                                    <ArrowRight size={20} />
+                                </Link>
+                                <Link
+                                    to="/contact"
+                                    className="inline-flex items-center bg-white/20 hover:bg-white/30 text-white font-semibold rounded-full border border-white/30 transition-all"
+                                    style={{ gap: '8px', padding: '18px 36px' }}
+                                >
+                                    Contact Us
+                                </Link>
+                            </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
             </section>
         </div>

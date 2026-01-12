@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Bell, Sparkles } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
 import { announcementsAPI } from '../../services/api';
 
 export default function ToastBanner() {
@@ -43,14 +43,17 @@ export default function ToastBanner() {
     if (!show || !announcement) return null;
 
     return (
-        <div className="fixed top-20 left-0 right-0 z-40 toast-enter">
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white py-3.5 px-6 rounded-2xl shadow-xl shadow-purple-500/20 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+        <div className="fixed left-0 right-0 z-40 toast-enter" style={{ top: '80px' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }}>
+                <div
+                    className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white rounded-2xl shadow-xl shadow-purple-500/20 flex items-center justify-between"
+                    style={{ padding: '14px 24px' }}
+                >
+                    <div className="flex items-center" style={{ gap: '16px' }}>
                         <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                             <Sparkles size={16} className="text-amber-300" />
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center flex-wrap" style={{ gap: '8px' }}>
                             <span className="font-bold">{announcement.title}</span>
                             <span className="text-purple-200">—</span>
                             <span className="text-purple-100">{announcement.message}</span>
@@ -58,7 +61,8 @@ export default function ToastBanner() {
                     </div>
                     <button
                         onClick={handleDismiss}
-                        className="p-2 hover:bg-white/20 rounded-xl transition-colors flex-shrink-0 ml-4"
+                        className="hover:bg-white/20 rounded-xl transition-colors flex-shrink-0"
+                        style={{ padding: '8px', marginLeft: '16px' }}
                     >
                         <X size={18} />
                     </button>

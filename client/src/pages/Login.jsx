@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, Loader2, Sparkles, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ArrowRight, Package } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -37,29 +37,29 @@ export default function Login() {
     return (
         <div className="min-h-screen flex">
             {/* Left Side - Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-1/2 flex items-center justify-center bg-white" style={{ padding: '32px' }}>
+                <div className="w-full" style={{ maxWidth: '400px' }}>
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 mb-10">
+                    <Link to="/" className="flex items-center" style={{ gap: '10px', marginBottom: '40px' }}>
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                            <Sparkles className="text-white" size={20} />
+                            <Package className="text-white" size={20} />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-900 bg-clip-text text-transparent">
-                                LIP
+                                LIP Materials
                             </span>
-                            <span className="text-[10px] text-purple-400 -mt-1 font-medium tracking-wider">PACKAGING</span>
+                            <span className="text-[10px] text-amber-500 font-medium tracking-wider" style={{ marginTop: '-2px' }}>PACKAGING SUPPLIES</span>
                         </div>
                     </Link>
 
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+                    <div style={{ marginBottom: '32px' }}>
+                        <h1 className="text-3xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>Welcome Back</h1>
                         <p className="text-gray-500">Sign in to access your account</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <form onSubmit={handleSubmit}>
+                        <div style={{ marginBottom: '20px' }}>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
                                 Email Address
                             </label>
                             <input
@@ -67,14 +67,15 @@ export default function Login() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="input"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                style={{ padding: '14px 16px' }}
                                 placeholder="you@example.com"
                                 autoComplete="email"
                             />
                         </div>
 
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                        <div style={{ marginBottom: '20px' }}>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
                                 Password
                             </label>
                             <div className="relative">
@@ -83,7 +84,8 @@ export default function Login() {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="input pr-12"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    style={{ padding: '14px 48px 14px 16px' }}
                                     placeholder="••••••••"
                                     autoComplete="current-password"
                                 />
@@ -97,8 +99,8 @@ export default function Login() {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 cursor-pointer">
+                        <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
+                            <label className="flex items-center cursor-pointer" style={{ gap: '8px' }}>
                                 <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
                                 <span className="text-sm text-gray-600">Remember me</span>
                             </label>
@@ -108,7 +110,7 @@ export default function Login() {
                         </div>
 
                         {error && (
-                            <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
+                            <div className="bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl" style={{ padding: '16px', marginBottom: '24px' }}>
                                 {error}
                             </div>
                         )}
@@ -116,7 +118,8 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full btn btn-primary py-4 text-base"
+                            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 transition-all flex items-center justify-center"
+                            style={{ padding: '16px', gap: '8px' }}
                         >
                             {isLoading ? (
                                 <Loader2 className="animate-spin" size={20} />
@@ -129,7 +132,7 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <p className="mt-8 text-center text-gray-500">
+                    <p className="text-center text-gray-500" style={{ marginTop: '32px' }}>
                         Don't have an account?{' '}
                         <Link to="/register" className="text-purple-600 hover:text-purple-700 font-semibold">
                             Create one
@@ -137,15 +140,16 @@ export default function Login() {
                     </p>
 
                     {/* Demo Credentials */}
-                    <div className="mt-8 p-4 rounded-xl bg-purple-50 border border-purple-100">
-                        <p className="text-xs text-purple-600 font-medium mb-3 text-center">Quick Demo Access</p>
+                    <div className="bg-purple-50 border border-purple-100 rounded-xl" style={{ marginTop: '32px', padding: '16px' }}>
+                        <p className="text-xs text-purple-600 font-medium text-center" style={{ marginBottom: '12px' }}>Quick Demo Access</p>
                         <button
                             type="button"
                             onClick={() => {
                                 setEmail('admin@gmail.com');
                                 setPassword('admin@123');
                             }}
-                            className="w-full py-2.5 px-4 rounded-lg bg-white border border-purple-200 text-purple-700 text-sm font-medium hover:bg-purple-50 transition-colors"
+                            className="w-full bg-white border border-purple-200 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-50 transition-colors"
+                            style={{ padding: '10px 16px' }}
                         >
                             Fill Admin Credentials
                         </button>
@@ -162,13 +166,13 @@ export default function Login() {
                 </div>
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
 
-                <div className="relative z-10 text-center p-12">
-                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl shadow-2xl shadow-amber-500/30 flex items-center justify-center mb-8 animate-float">
-                        <Sparkles size={40} className="text-white" />
+                <div className="relative z-10 text-center" style={{ padding: '48px' }}>
+                    <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl shadow-2xl shadow-amber-500/30 flex items-center justify-center animate-float" style={{ margin: '0 auto 32px' }}>
+                        <Package size={40} className="text-white" />
                     </div>
-                    <h2 className="text-3xl font-bold text-white mb-4">Premium Packaging</h2>
-                    <p className="text-purple-200/80 max-w-sm mx-auto">
-                        Access your dashboard to manage products, orders, and create stunning announcements for your customers.
+                    <h2 className="text-3xl font-bold text-white" style={{ marginBottom: '16px' }}>Premium Packaging</h2>
+                    <p className="text-purple-200/80" style={{ maxWidth: '320px', margin: '0 auto' }}>
+                        Access your dashboard to manage products, orders, and grow your packaging business.
                     </p>
                 </div>
             </div>

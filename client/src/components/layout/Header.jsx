@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard, Sparkles } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard, Package } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
@@ -36,39 +36,44 @@ export default function Header() {
     const navLinks = [
         { to: '/', label: 'Home' },
         { to: '/products', label: 'Products' },
-        { to: '/about', label: 'About' },
+        { to: '/products?category=boxes', label: 'Boxes' },
+        { to: '/products?category=covers', label: 'Covers' },
+        { to: '/products?category=tapes', label: 'Tapes' },
         { to: '/contact', label: 'Contact' },
     ];
 
     return (
         <header
+            role="banner"
+            aria-label="Main navigation"
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
                 ? 'bg-luxury-900/90 backdrop-blur-md shadow-lg shadow-black/10'
                 : 'bg-transparent'
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg shadow-gold-500/20 group-hover:shadow-gold-500/40 transition-all">
-                            <Sparkles className="text-luxury-900" size={20} />
+                    <Link to="/" className="flex items-center group" style={{ gap: '10px' }}>
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-all">
+                            <Package className="text-white" size={20} />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-xl font-bold text-white">
-                                LIP
+                            <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-900 bg-clip-text text-transparent">
+                                LIP Materials
                             </span>
-                            <span className="text-[10px] text-gold-400 -mt-1 font-medium tracking-wider">PACKAGING</span>
+                            <span className="text-[10px] text-amber-500 font-medium tracking-wider" style={{ marginTop: '-2px' }}>PACKAGING SUPPLIES</span>
                         </div>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center gap-1">
+                    <nav className="hidden lg:flex items-center" style={{ gap: '4px' }} aria-label="Primary navigation">
                         {navLinks.map((link) => (
                             <Link
-                                key={link.to}
+                                key={link.to + link.label}
                                 to={link.to}
-                                className="relative px-4 py-2 text-gray-300 hover:text-white font-medium transition-colors group"
+                                className="relative text-gray-600 hover:text-purple-600 font-medium transition-colors group"
+                                style={{ padding: '8px 16px' }}
                             >
                                 {link.label}
                                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-gold-400 to-gold-600 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
@@ -77,16 +82,18 @@ export default function Header() {
                     </nav>
 
                     {/* Desktop Actions */}
-                    <div className="hidden lg:flex items-center gap-3">
+                    <div className="hidden lg:flex items-center" style={{ gap: '12px' }}>
                         {isAuthenticated ? (
                             <>
                                 <Link
                                     to="/cart"
-                                    className="relative p-2.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                                    className="relative text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                                    style={{ padding: '10px' }}
+                                    aria-label={`Shopping cart with ${cartItemCount} items`}
                                 >
-                                    <ShoppingCart size={22} />
+                                    <ShoppingCart size={22} aria-hidden="true" />
                                     {cartItemCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold-500 text-luxury-900 text-xs font-bold rounded-full flex items-center justify-center shadow-lg">
+                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg" aria-hidden="true">
                                             {cartItemCount}
                                         </span>
                                     )}
@@ -95,40 +102,45 @@ export default function Header() {
                                 {isAdmin() && (
                                     <Link
                                         to="/admin"
-                                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl hover:from-gray-900 hover:to-black transition-all shadow-lg hover:shadow-xl border border-white/10"
+                                        className="flex items-center bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl hover:from-gray-900 hover:to-black transition-all shadow-lg hover:shadow-xl"
+                                        style={{ gap: '8px', padding: '8px 16px' }}
                                     >
                                         <LayoutDashboard size={18} />
                                         <span className="font-medium">Admin</span>
                                     </Link>
                                 )}
 
-                                <div className="flex items-center gap-2 pl-3 border-l border-white/10">
-                                    <Link to="/profile" className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
-                                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
-                                            <User size={18} className="text-gold-400" />
+                                <div className="flex items-center border-l border-gray-200" style={{ gap: '8px', paddingLeft: '12px' }}>
+                                    <Link to="/profile" className="flex items-center text-gray-600 hover:text-purple-600 transition-colors" style={{ gap: '8px' }}>
+                                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                                            <User size={18} className="text-purple-600" />
                                         </div>
                                         <span className="font-medium text-sm">{user?.name?.split(' ')[0]}</span>
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+                                        className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                        style={{ padding: '8px' }}
                                         title="Logout"
+                                        aria-label="Logout from your account"
                                     >
-                                        <LogOut size={18} />
+                                        <LogOut size={18} aria-hidden="true" />
                                     </button>
                                 </div>
                             </>
                         ) : (
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center" style={{ gap: '12px' }}>
                                 <Link
                                     to="/login"
-                                    className="px-4 py-2 text-gray-300 hover:text-white font-medium transition-colors"
+                                    className="text-gray-600 hover:text-purple-600 font-medium transition-colors"
+                                    style={{ padding: '8px 16px' }}
                                 >
                                     Sign In
                                 </Link>
                                 <Link
                                     to="/register"
-                                    className="px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-luxury-900 font-bold rounded-xl transition-all shadow-lg shadow-gold-500/20"
+                                    className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/30 transition-all"
+                                    style={{ padding: '10px 20px' }}
                                 >
                                     Get Started
                                 </Link>
@@ -139,22 +151,26 @@ export default function Header() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="lg:hidden p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                        className="lg:hidden text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                        style={{ padding: '8px' }}
+                        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={isMenuOpen}
                     >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        {isMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
                     </button>
                 </div>
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="lg:hidden py-4 border-t border-white/10 bg-luxury-900 animate-slide-up rounded-b-2xl shadow-xl">
-                        <nav className="flex flex-col gap-1 px-2">
+                    <div className="lg:hidden border-t border-purple-100 animate-slide-up" style={{ padding: '16px 0' }}>
+                        <nav className="flex flex-col" style={{ gap: '4px' }}>
                             {navLinks.map((link) => (
                                 <Link
-                                    key={link.to}
+                                    key={link.to + link.label}
                                     to={link.to}
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all"
+                                    className="text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl font-medium transition-all"
+                                    style={{ padding: '12px 16px' }}
                                 >
                                     {link.label}
                                 </Link>
@@ -165,16 +181,18 @@ export default function Header() {
                                     <Link
                                         to="/cart"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl flex items-center gap-3 font-medium"
+                                        className="text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl flex items-center font-medium"
+                                        style={{ padding: '12px 16px', gap: '12px' }}
                                     >
                                         <ShoppingCart size={18} />
-                                        Cart {cartItemCount > 0 && <span className="px-2 py-0.5 bg-gold-500 text-luxury-900 text-xs font-bold rounded-full">{cartItemCount}</span>}
+                                        Cart {cartItemCount > 0 && <span className="bg-amber-500 text-white text-xs font-bold rounded-full" style={{ padding: '2px 8px' }}>{cartItemCount}</span>}
                                     </Link>
                                     {isAdmin() && (
                                         <Link
                                             to="/admin"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl flex items-center gap-3 font-medium"
+                                            className="text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl flex items-center font-medium"
+                                            style={{ padding: '12px 16px', gap: '12px' }}
                                         >
                                             <LayoutDashboard size={18} />
                                             Admin Dashboard
@@ -182,25 +200,28 @@ export default function Header() {
                                     )}
                                     <button
                                         onClick={handleLogout}
-                                        className="px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl flex items-center gap-3 font-medium text-left w-full"
+                                        className="text-red-500 hover:bg-red-50 rounded-xl flex items-center font-medium text-left w-full"
+                                        style={{ padding: '12px 16px', gap: '12px' }}
                                     >
                                         <LogOut size={18} />
                                         Logout
                                     </button>
                                 </>
                             ) : (
-                                <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-white/10">
+                                <div className="flex flex-col border-t border-purple-100" style={{ gap: '8px', paddingTop: '12px', marginTop: '8px' }}>
                                     <Link
                                         to="/login"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl font-medium"
+                                        className="text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl font-medium"
+                                        style={{ padding: '12px 16px' }}
                                     >
                                         Sign In
                                     </Link>
                                     <Link
                                         to="/register"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="mx-4 py-3 bg-gold-500 text-luxury-900 font-bold rounded-xl text-center"
+                                        className="bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl text-center"
+                                        style={{ margin: '0 16px', padding: '12px' }}
                                     >
                                         Get Started
                                     </Link>

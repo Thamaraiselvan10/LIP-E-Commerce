@@ -80,6 +80,7 @@ export const announcementsAPI = {
     getActive: () => api.get('/announcements/active'),
     // Admin
     getAll: () => api.get('/announcements'),
+    getAllAdmin: () => api.get('/announcements'),
     create: (data) => api.post('/announcements', data),
     update: (id, data) => api.put(`/announcements/${id}`, data),
     toggle: (id) => api.patch(`/announcements/${id}/toggle`),

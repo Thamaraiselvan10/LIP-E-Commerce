@@ -75,11 +75,19 @@ export default function AnnouncementManagement() {
         setSaving(true);
 
         try {
+            // Convert is_active to isActive for backend
+            const payload = {
+                title: formData.title,
+                message: formData.message,
+                type: formData.type,
+                isActive: formData.is_active
+            };
+
             if (editingItem) {
-                await announcementsAPI.update(editingItem.id, formData);
+                await announcementsAPI.update(editingItem.id, payload);
                 toast.success('Announcement updated');
             } else {
-                await announcementsAPI.create(formData);
+                await announcementsAPI.create(payload);
                 toast.success('Announcement created');
             }
             handleCloseModal();
@@ -164,7 +172,7 @@ export default function AnnouncementManagement() {
 
             {/* Announcements Grid */}
             {announcements.length > 0 ? (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3" style={{ gap: '24px' }}>
                     {announcements.map((item) => {
                         const styles = getTypeStyles(item.type);
                         const TypeIcon = styles.icon;
@@ -250,46 +258,49 @@ export default function AnnouncementManagement() {
                     <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={handleCloseModal} />
 
                     <div className="relative bg-white rounded-3xl w-full max-w-md shadow-2xl animate-scale-in overflow-hidden">
-                        <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-4 flex items-center justify-between">
+                        <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between" style={{ padding: '16px 24px' }}>
                             <h2 className="text-lg font-bold">{editingItem ? 'Edit Announcement' : 'New Announcement'}</h2>
                             <button onClick={handleCloseModal} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                            <div className="space-y-1.5">
+                        <form onSubmit={handleSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 <label className="text-sm font-semibold text-slate-700">Title</label>
                                 <input
                                     type="text"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
+                                    style={{ padding: '12px 16px' }}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
                                     placeholder="e.g. Summer Sale!"
                                     required
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 <label className="text-sm font-semibold text-slate-700">Message</label>
                                 <textarea
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm min-h-[100px]"
+                                    style={{ padding: '12px 16px', minHeight: '100px' }}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
                                     placeholder="e.g. Get 50% off on all items..."
                                     required
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 <label className="text-sm font-semibold text-slate-700">Type</label>
-                                <div className="flex bg-slate-100 p-1.5 rounded-xl">
+                                <div className="flex bg-slate-100 rounded-xl" style={{ padding: '6px' }}>
                                     {['toast', 'popup', 'both'].map(type => (
                                         <button
                                             key={type}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, type })}
-                                            className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold capitalize transition-all ${formData.type === type
+                                            style={{ padding: '8px 12px' }}
+                                            className={`flex-1 rounded-lg text-sm font-bold capitalize transition-all ${formData.type === type
                                                 ? 'bg-white text-slate-800 shadow-sm'
                                                 : 'text-slate-500 hover:text-slate-700'
                                                 }`}
@@ -300,8 +311,8 @@ export default function AnnouncementManagement() {
                                 </div>
                             </div>
 
-                            <div className="pt-2">
-                                <label className="flex items-center gap-3 p-4 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                            <div style={{ paddingTop: '8px' }}>
+                                <label className="flex items-center cursor-pointer hover:bg-slate-50 transition-colors border border-slate-100 rounded-xl" style={{ gap: '12px', padding: '16px' }}>
                                     <div className={`w-5 h-5 rounded-md border flex items-center justify-center ${formData.is_active ? 'bg-purple-600 border-purple-600' : 'border-slate-300'}`}>
                                         {formData.is_active && <CheckCircle size={14} className="text-white" />}
                                     </div>
@@ -315,8 +326,8 @@ export default function AnnouncementManagement() {
                                 </label>
                             </div>
 
-                            <div className="flex gap-3 pt-2">
-                                <button type="button" onClick={handleCloseModal} className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-slate-700 font-bold hover:bg-slate-50 transition-colors">
+                            <div className="flex" style={{ gap: '12px', paddingTop: '8px' }}>
+                                <button type="button" onClick={handleCloseModal} style={{ padding: '12px 16px' }} className="flex-1 border border-slate-200 rounded-xl text-slate-700 font-bold hover:bg-slate-50 transition-colors">
                                     Cancel
                                 </button>
                                 <button type="submit" disabled={saving} className="flex-1 btn btn-primary rounded-xl shadow-lg shadow-purple-500/20">

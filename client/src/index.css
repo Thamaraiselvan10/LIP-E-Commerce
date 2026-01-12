@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 /* ========================================
    LIP Packaging - Premium Purple & Gold Theme
    ======================================== */
@@ -52,6 +53,36 @@ body {
   background-color: var(--light);
   color: #1f2937;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Performance: Reduce animations on mobile */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Performance: Reduce animations on slow connections */
+@media (max-width: 768px) {
+
+  .animate-float,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
+/* Content visibility for lazy rendering */
+.lazy-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
 }
 
 /* ========================================

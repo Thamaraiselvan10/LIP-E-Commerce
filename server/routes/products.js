@@ -193,24 +193,57 @@ router.put('/:id', authenticateToken, isAdmin, upload.single('image'), (req, res
 // Delete product (admin only)
 router.delete('/:id', authenticateToken, isAdmin, (req, res) => {
     try {
-        const product = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
+        const productId = req.params.id;
+        const product = db.prepare('SELECT * FROM products WHERE id = ?').get(productId);
 
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
 
+        // Check if product is in any orders
+        const orderCount = db.prepare('SELECT COUNT(*) as count FROM order_items WHERE product_id = ?').get(productId);
+
+        if (orderCount.count > 0) {
+            // Soft delete: Mark as inactive instead of deleting
+            db.prepare('UPDATE products SET is_active = 0 WHERE id = ?').run(productId);
+            return res.json({
+                message: 'Product archived successfully',
+                note: 'Product exists in previous orders, so it was marked as inactive instead of being permanently deleted.'
+            });
+        }
+
+        // Hard delete: No orders, safe to delete completely
+
         // Delete image if exists
         if (product.image_url) {
             const imagePath = path.join(__dirname, '..', product.image_url);
-            if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
+            try {
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
+                }
+            } catch (err) {
+                console.error('Failed to delete image file:', err);
+                // Continue with product deletion even if image delete fails
             }
         }
 
-        db.prepare('DELETE FROM products WHERE id = ?').run(req.params.id);
-        res.json({ message: 'Product deleted' });
+        db.prepare('DELETE FROM products WHERE id = ?').run(productId);
+        res.json({ message: 'Product deleted permanently' });
+
     } catch (error) {
         console.error('Delete product error:', error);
+        // Fallback for any other constraint errors
+        if (error.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+            try {
+                db.prepare('UPDATE products SET is_active = 0 WHERE id = ?').run(req.params.id);
+                return res.json({
+                    message: 'Product archived',
+                    note: 'Constraint violation detected. Product marked as inactive.'
+                });
+            } catch (softDeleteError) {
+                return res.status(500).json({ error: 'Failed to delete or archive product' });
+            }
+        }
         res.status(500).json({ error: 'Failed to delete product' });
     }
 });

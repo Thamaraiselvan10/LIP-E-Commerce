@@ -50,7 +50,7 @@ export default function AdminLayout() {
                 {/* Logo */}
                 <div className="flex items-center flex-shrink-0 border-b border-white/10" style={{ height: '64px', padding: '0 16px' }}>
                     {!sidebarCollapsed ? (
-                        <div className="flex items-center gap-3 w-full">
+                        <div className="flex items-center w-full" style={{ gap: '12px' }}>
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
                                 <Sparkles className="text-white" size={20} />
                             </div>
@@ -60,7 +60,8 @@ export default function AdminLayout() {
                             </div>
                             <button
                                 onClick={() => setSidebarCollapsed(true)}
-                                className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors flex-shrink-0"
+                                className="rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors flex-shrink-0"
+                                style={{ padding: '8px' }}
                             >
                                 <ChevronLeft size={18} />
                             </button>
@@ -68,7 +69,8 @@ export default function AdminLayout() {
                     ) : (
                         <button
                             onClick={() => setSidebarCollapsed(false)}
-                            className="w-10 h-10 mx-auto rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                            className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                            style={{ margin: '0 auto' }}
                         >
                             <ChevronRight size={18} />
                         </button>
@@ -85,7 +87,7 @@ export default function AdminLayout() {
                                     key={item.path}
                                     to={item.path}
                                     style={{ height: '44px', padding: sidebarCollapsed ? '0' : '0 14px' }}
-                                    className={`flex items-center gap-3 rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'justify-center' : ''
+                                    className={`flex items-center rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'justify-center' : ''
                                         } ${active
                                             ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg'
                                             : 'text-slate-400 hover:bg-white/10 hover:text-white'
@@ -94,7 +96,7 @@ export default function AdminLayout() {
                                 >
                                     <item.icon size={20} className="flex-shrink-0" />
                                     {!sidebarCollapsed && (
-                                        <span className="font-medium text-sm truncate">{item.label}</span>
+                                        <span className="font-medium text-sm truncate" style={{ marginLeft: '12px' }}>{item.label}</span>
                                     )}
                                 </Link>
                             );
@@ -105,7 +107,7 @@ export default function AdminLayout() {
                 {/* User Footer */}
                 <div className="flex-shrink-0 border-t border-white/10" style={{ padding: '12px' }}>
                     {!sidebarCollapsed ? (
-                        <div className="flex items-center gap-3 rounded-xl bg-white/5" style={{ padding: '12px' }}>
+                        <div className="flex items-center bg-white/5 rounded-xl" style={{ gap: '12px', padding: '12px' }}>
                             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
                                 <span className="font-semibold text-white text-xs">{user?.name?.[0]}</span>
                             </div>
@@ -115,7 +117,8 @@ export default function AdminLayout() {
                             </div>
                             <button
                                 onClick={handleLogout}
-                                className="p-2 text-slate-400 hover:text-red-400 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
+                                className="text-slate-400 hover:text-red-400 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
+                                style={{ padding: '8px' }}
                                 title="Logout"
                             >
                                 <LogOut size={16} />
@@ -124,7 +127,8 @@ export default function AdminLayout() {
                     ) : (
                         <button
                             onClick={handleLogout}
-                            className="w-10 h-10 mx-auto rounded-xl bg-white/5 hover:bg-red-500/20 flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors"
+                            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors"
+                            style={{ margin: '0 auto' }}
                             title="Logout"
                         >
                             <LogOut size={18} />
@@ -138,31 +142,35 @@ export default function AdminLayout() {
                 style={{ marginLeft: `${sidebarWidth}px` }}
                 className="flex-1 flex flex-col min-h-screen transition-[margin] duration-300"
             >
-                {/* Top Header - With left/right padding */}
-                <header className="sticky top-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center justify-between" style={{ paddingLeft: '32px', paddingRight: '32px' }}>
-                    <div className="flex items-center gap-3">
+                {/* Top Header */}
+                <header className="sticky top-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center justify-between" style={{ padding: '0 32px' }}>
+                    <div className="flex items-center" style={{ gap: '12px' }}>
                         <h2 className="text-base font-bold text-slate-800">
                             {navItems.find(item => isActive(item.path, item.exact))?.label || 'Dashboard'}
                         </h2>
-                        <span className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                        <span className="flex items-center text-xs text-green-600 bg-green-50 rounded-full font-medium" style={{ gap: '6px', padding: '2px 8px' }}>
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                             Online
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center" style={{ gap: '8px' }}>
                         <button className="w-9 h-9 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors flex items-center justify-center relative">
                             <Bell size={18} />
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+                            <span className="absolute w-2 h-2 bg-red-500 rounded-full" style={{ top: '6px', right: '6px' }} />
                         </button>
-                        <Link to="/" className="flex items-center gap-2 h-9 px-4 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
+                        <Link
+                            to="/"
+                            className="flex items-center h-9 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors"
+                            style={{ gap: '8px', padding: '0 16px' }}
+                        >
                             <Home size={14} />
                             <span className="hidden sm:inline">View Site</span>
                         </Link>
                     </div>
                 </header>
 
-                {/* Page Content - WITH padding for gap from sidebar and edges */}
+                {/* Page Content */}
                 <main className="flex-1" style={{ padding: '24px 32px 32px 32px' }}>
                     <Outlet />
                 </main>
