@@ -156,6 +156,17 @@ export default function Login() {
                         >
                             Fill Admin Credentials
                         </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setEmail('customer@gmail.com');
+                                setPassword('admin@123');
+                            }}
+                            className="w-full bg-white border border-purple-200 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-50 transition-colors mt-2"
+                            style={{ padding: '10px 16px' }}
+                        >
+                            Fill Customer Credentials
+                        </button>
                     </div>
                 </div>
             </div>
