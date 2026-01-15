@@ -1,11 +1,30 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Loader2, Shield, Truck, Sparkles } from 'lucide-react';
 import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// Animation variants
+const pageVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.4 } },
+    exit: { opacity: 0, transition: { duration: 0.3 } }
+};
+
+const itemVariants = {
+    initial: { opacity: 0, x: -30, scale: 0.95 },
+    animate: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.4, ease: 'easeOut' } },
+    exit: { opacity: 0, x: 30, scale: 0.95, transition: { duration: 0.3 } }
+};
+
+const summaryVariants = {
+    initial: { opacity: 0, x: 30 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.5, delay: 0.2 } }
+};
 
 export default function Cart() {
     const { items, total, isLoading, fetchCart, updateQuantity, removeItem, clearCart } = useCartStore();
@@ -51,19 +70,33 @@ export default function Cart() {
 
     if (!isAuthenticated) {
         return (
-            <div className="h-screen flex items-center justify-center bg-gradient-to-b from-purple-50/50 to-white" style={{ paddingTop: '64px' }}>
+            <motion.div
+                className="h-screen flex items-center justify-center bg-gradient-to-b from-purple-50/50 to-white"
+                style={{ paddingTop: '64px' }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+            >
                 <div className="text-center">
-                    <div className="w-24 h-24 bg-purple-100 rounded-2xl flex items-center justify-center" style={{ margin: '0 auto 24px' }}>
+                    <motion.div
+                        className="w-24 h-24 bg-purple-100 rounded-2xl flex items-center justify-center"
+                        style={{ margin: '0 auto 24px' }}
+                        initial={{ rotate: -10 }}
+                        animate={{ rotate: 0 }}
+                        transition={{ duration: 0.5, type: 'spring' }}
+                    >
                         <ShoppingBag size={40} className="text-purple-400" />
-                    </div>
+                    </motion.div>
                     <h2 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>Please login to view your cart</h2>
                     <p className="text-gray-600" style={{ marginBottom: '32px' }}>Sign in to add items and manage your cart</p>
-                    <Link to="/login" className="inline-flex items-center bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl shadow-lg" style={{ gap: '8px', padding: '14px 28px' }}>
-                        Sign In
-                        <ArrowRight size={18} />
-                    </Link>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Link to="/login" className="inline-flex items-center bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl shadow-lg" style={{ gap: '8px', padding: '14px 28px' }}>
+                            Sign In
+                            <ArrowRight size={18} />
+                        </Link>
+                    </motion.div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
@@ -77,24 +110,44 @@ export default function Cart() {
 
     if (items.length === 0) {
         return (
-            <div className="h-screen flex items-center justify-center bg-gradient-to-b from-purple-50/50 to-white" style={{ paddingTop: '64px' }}>
+            <motion.div
+                className="h-screen flex items-center justify-center bg-gradient-to-b from-purple-50/50 to-white"
+                style={{ paddingTop: '64px' }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+            >
                 <div className="text-center">
-                    <div className="w-24 h-24 bg-purple-100 rounded-2xl flex items-center justify-center" style={{ margin: '0 auto 24px' }}>
+                    <motion.div
+                        className="w-24 h-24 bg-purple-100 rounded-2xl flex items-center justify-center"
+                        style={{ margin: '0 auto 24px' }}
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
                         <ShoppingBag size={40} className="text-purple-400" />
-                    </div>
+                    </motion.div>
                     <h2 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>Your cart is empty</h2>
                     <p className="text-gray-600" style={{ marginBottom: '32px' }}>Start shopping to add items to your cart</p>
-                    <Link to="/products" className="inline-flex items-center bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl shadow-lg" style={{ gap: '8px', padding: '14px 28px' }}>
-                        Browse Products
-                        <ArrowRight size={18} />
-                    </Link>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Link to="/products" className="inline-flex items-center bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl shadow-lg" style={{ gap: '8px', padding: '14px 28px' }}>
+                            Browse Products
+                            <ArrowRight size={18} />
+                        </Link>
+                    </motion.div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="flex flex-col bg-gradient-to-b from-purple-50/50 to-white" style={{ minHeight: '100vh', paddingTop: '64px' }}>
+        <motion.div
+            className="flex flex-col bg-gradient-to-b from-purple-50/50 to-white"
+            style={{ minHeight: '100vh', paddingTop: '64px' }}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+        >
             {/* Main Content - Fits Screen */}
             <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
                 {/* Header Bar */}
@@ -273,6 +326,6 @@ export default function Cart() {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

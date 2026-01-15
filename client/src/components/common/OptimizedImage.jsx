@@ -1,12 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 
-// Optimized Image component with lazy loading
+/**
+ * OptimizedImage - A performance-optimized image component with:
+ * - Lazy loading with Intersection Observer
+ * - Placeholder blur while loading
+ * - Error fallback handling
+ * - Smooth fade-in animation
+ */
 export default function OptimizedImage({
     src,
     alt,
     className = '',
     style = {},
-    fallback = 'https://placehold.co/300x300/f1f5f9/94a3b8?text=No+Image',
+    width,
+    height,
+    fallback = 'https://placehold.co/300x300/f3f4f6/9ca3af?text=No+Image',
     ...props
 }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -23,8 +31,8 @@ export default function OptimizedImage({
                 }
             },
             {
-                rootMargin: '100px', // Start loading 100px before visible
-                threshold: 0
+                rootMargin: '100px', // Start loading 100px before coming into view
+                threshold: 0.01
             }
         );
 
@@ -39,34 +47,43 @@ export default function OptimizedImage({
         setIsLoaded(true);
     };
 
-    const handleError = (e) => {
+    const handleError = () => {
         setHasError(true);
-        e.target.src = fallback;
+        setIsLoaded(true);
     };
+
+    const imageSrc = hasError ? fallback : (isInView ? src : undefined);
 
     return (
         <div
             ref={imgRef}
             className={`relative overflow-hidden ${className}`}
-            style={style}
+            style={{
+                ...style,
+                backgroundColor: '#f3f4f6', // Placeholder background
+            }}
         >
-            {/* Placeholder skeleton */}
+            {/* Placeholder shimmer */}
             {!isLoaded && (
                 <div
-                    className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse"
-                    style={{ background: 'linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%)', backgroundSize: '200% 100%' }}
+                    className="absolute inset-0 animate-pulse"
+                    style={{ backgroundColor: '#e5e7eb' }}
                 />
             )}
 
+            {/* Actual image */}
             {isInView && (
                 <img
-                    src={hasError ? fallback : src}
+                    src={imageSrc}
                     alt={alt}
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    onLoad={handleLoad}
-                    onError={handleError}
+                    width={width}
+                    height={height}
                     loading="lazy"
                     decoding="async"
+                    onLoad={handleLoad}
+                    onError={handleError}
+                    className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    style={{ ...style }}
                     {...props}
                 />
             )}

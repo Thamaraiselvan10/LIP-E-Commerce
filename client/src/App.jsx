@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Layout Components (loaded eagerly as they're always needed)
@@ -42,16 +42,19 @@ function LoadingSpinner() {
   );
 }
 
-// Protected Route Component
+// Protected Route Component - preserves redirect URL
 function ProtectedRoute({ children, adminOnly = false }) {
   const { isAuthenticated, isAdmin } = useAuthStore();
+  const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    // Preserve the intended destination as redirect parameter
+    const redirectPath = location.pathname + location.search;
+    return <Navigate to={`/login?redirect=${encodeURIComponent(redirectPath)}`} replace />;
   }
 
   if (adminOnly && !isAdmin()) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -158,14 +161,29 @@ function App() {
 
         {/* Public Routes */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-        <Route path="/products" element={<MainLayout><Products /></MainLayout>} />
-        <Route path="/products/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+        {/* Protected Routes - Require Authentication */}
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute>
+              <MainLayout><Products /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/products/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout><ProductDetail /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/cart"
           element={
-            <MainLayout>
-              <Cart />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout><Cart /></MainLayout>
+            </ProtectedRoute>
           }
         />
         <Route

@@ -37,9 +37,6 @@ export default function Header() {
     const navLinks = [
         { to: '/', label: 'Home' },
         { to: '/products', label: 'Products' },
-        { to: '/products?category=boxes', label: 'Boxes' },
-        { to: '/products?category=covers', label: 'Covers' },
-        { to: '/products?category=tapes', label: 'Tapes' },
         { to: '/contact', label: 'Contact' },
     ];
 
