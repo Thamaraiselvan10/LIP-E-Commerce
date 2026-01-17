@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-    LayoutDashboard, Package, ShoppingCart, Bell,
+    LayoutDashboard, Package, ShoppingCart, Bell, MessageSquare,
     LogOut, ChevronRight, Home, Sparkles, ChevronLeft
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
@@ -29,6 +29,7 @@ export default function AdminLayout() {
         { path: '/admin/products', icon: Package, label: 'Products' },
         { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
         { path: '/admin/announcements', icon: Bell, label: 'Announcements' },
+        { path: '/admin/contacts', icon: MessageSquare, label: 'Contacts' },
     ];
 
     const isActive = (path, exact = false) => {

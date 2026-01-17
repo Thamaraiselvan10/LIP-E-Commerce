@@ -90,4 +90,16 @@ export const announcementsAPI = {
     delete: (id) => api.delete(`/announcements/${id}`),
 };
 
+// Contacts API
+export const contactsAPI = {
+    // Public
+    submit: (data) => api.post('/contacts', data),
+    // Admin
+    getAll: (params) => api.get('/contacts', { params }),
+    getById: (id) => api.get(`/contacts/${id}`),
+    updateStatus: (id, status) => api.patch(`/contacts/${id}/status`, { status }),
+    delete: (id) => api.delete(`/contacts/${id}`),
+    getNewCount: () => api.get('/contacts/stats/new-count'),
+};
+
 export default api;

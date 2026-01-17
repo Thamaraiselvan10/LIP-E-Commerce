@@ -22,11 +22,15 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 
+// Public Pages (lazy loaded)
+const Contact = lazy(() => import('./pages/Contact'));
+
 // Admin Pages (lazy loaded)
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const ProductManagement = lazy(() => import('./pages/admin/ProductManagement'));
 const OrderManagement = lazy(() => import('./pages/admin/OrderManagement'));
 const AnnouncementManagement = lazy(() => import('./pages/admin/AnnouncementManagement'));
+const ContactManagement = lazy(() => import('./pages/admin/ContactManagement'));
 
 // Auth Store
 import useAuthStore from './store/authStore';
@@ -158,6 +162,11 @@ function App() {
               <AnnouncementManagement />
             </Suspense>
           } />
+          <Route path="contacts" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <ContactManagement />
+            </Suspense>
+          } />
         </Route>
 
         {/* Public Routes */}
@@ -214,7 +223,7 @@ function App() {
 
         {/* Static Pages */}
         <Route path="/about" element={<MainLayout><StaticPage title="About Us" /></MainLayout>} />
-        <Route path="/contact" element={<MainLayout><StaticPage title="Contact Us" /></MainLayout>} />
+        <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
         <Route path="/faq" element={<MainLayout><StaticPage title="FAQ" /></MainLayout>} />
         <Route path="/privacy" element={<MainLayout><StaticPage title="Privacy Policy" /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><StaticPage title="Terms of Service" /></MainLayout>} />

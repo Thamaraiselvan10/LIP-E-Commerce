@@ -303,125 +303,166 @@ export default function ProductManagement() {
                 )}
             </div>
 
-            {/* Modal - Modern & Clean */}
+            {/* Modal - Clean Minimal Design */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={handleCloseModal} />
 
-                    <div className="relative bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in">
-                        <div className="sticky top-0 bg-white/80 backdrop-blur-md px-8 py-6 border-b border-slate-100 flex items-center justify-between z-10">
-                            <h2 className="text-xl font-bold text-slate-800">
+                    <div className="relative bg-white rounded-2xl w-full max-w-xl shadow-2xl animate-scale-in">
+                        {/* Header */}
+                        <div className="flex items-center justify-between" style={{ padding: '24px 28px 0' }}>
+                            <h2 className="text-xl font-bold text-gray-900">
                                 {editingProduct ? 'Edit Product' : 'Add New Product'}
                             </h2>
                             <button
                                 onClick={handleCloseModal}
-                                className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             >
-                                <X size={24} />
+                                <X size={20} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                            {/* Image Upload Area */}
-                            <div className="flex justify-center">
+                        <form onSubmit={handleSubmit} style={{ padding: '24px 28px 28px' }}>
+                            {/* Image Upload - Centered */}
+                            <div className="flex justify-center" style={{ marginBottom: '28px' }}>
                                 <div className="relative group">
-                                    <div className={`w-32 h-32 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden transition-all ${imagePreview ? 'border-purple-200 bg-purple-50' : 'border-slate-300 bg-slate-50'}`}>
+                                    <div
+                                        className={`w-32 h-32 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${imagePreview
+                                            ? 'border-purple-300 bg-purple-50'
+                                            : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
+                                            }`}
+                                    >
                                         {imagePreview ? (
-                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-xl" />
                                         ) : (
-                                            <div className="text-center p-4">
-                                                <Image className="mx-auto text-slate-400 mb-2" size={24} />
-                                                <span className="text-xs text-slate-500">Upload Image</span>
-                                            </div>
+                                            <>
+                                                <Image className="text-purple-400" size={28} style={{ marginBottom: '8px' }} />
+                                                <span className="text-sm text-purple-600 font-medium">Upload Image</span>
+                                            </>
                                         )}
                                     </div>
-                                    <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl font-medium text-sm">
-                                        <Upload size={18} className="mr-2" />
-                                        Change
-                                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    {imagePreview && (
+                                        <div className="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                            <span className="text-white text-sm font-medium flex items-center gap-1">
+                                                <Upload size={16} /> Change
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-slate-700">Product Name *</label>
+                            {/* Name & Category - 2 columns */}
+                            <div className="grid grid-cols-2" style={{ gap: '20px', marginBottom: '20px' }}>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
+                                        Product Name <span className="text-red-500">*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
                                         placeholder="e.g. Luxury Lip Balm"
+                                        className="w-full bg-white border-b-2 border-gray-200 focus:border-purple-500 outline-none text-gray-800 placeholder-gray-400 transition-colors"
+                                        style={{ padding: '10px 0' }}
                                         required
                                     />
                                 </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-slate-700">Category</label>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
+                                        Category
+                                    </label>
                                     <input
                                         type="text"
                                         name="category"
                                         value={formData.category}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
-                                        placeholder="e.g. Tubes"
+                                        placeholder="e.g. Boxes"
+                                        className="w-full bg-white border-b-2 border-gray-200 focus:border-purple-500 outline-none text-gray-800 placeholder-gray-400 transition-colors"
+                                        style={{ padding: '10px 0' }}
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-slate-700">Description</label>
+                            {/* Description - Full width */}
+                            <div style={{ marginBottom: '20px' }}>
+                                <label className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
+                                    Description
+                                </label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm min-h-[100px]"
                                     placeholder="Describe your product..."
+                                    rows={3}
+                                    className="w-full bg-white border-b-2 border-gray-200 focus:border-purple-500 outline-none text-gray-800 placeholder-gray-400 resize-none transition-colors"
+                                    style={{ padding: '10px 0' }}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-slate-700">Price (₹) *</label>
+                            {/* Price & Stock - 2 columns */}
+                            <div className="grid grid-cols-2" style={{ gap: '20px', marginBottom: '32px' }}>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
+                                        Price (₹) <span className="text-red-500">*</span>
+                                    </label>
                                     <input
                                         type="number"
                                         name="price"
                                         value={formData.price}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
+                                        placeholder="0.00"
                                         min="0"
                                         step="0.01"
+                                        className="w-full bg-white border-b-2 border-gray-200 focus:border-purple-500 outline-none text-gray-800 placeholder-gray-400 transition-colors"
+                                        style={{ padding: '10px 0' }}
                                         required
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-slate-700">Stock Quantity</label>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700" style={{ marginBottom: '8px' }}>
+                                        Stock Quantity
+                                    </label>
                                     <input
                                         type="number"
                                         name="stock"
                                         value={formData.stock}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
+                                        placeholder="0"
                                         min="0"
+                                        className="w-full bg-white border-b-2 border-gray-200 focus:border-purple-500 outline-none text-gray-800 placeholder-gray-400 transition-colors"
+                                        style={{ padding: '10px 0' }}
                                     />
                                 </div>
                             </div>
 
-                            <div className="pt-4 flex gap-4">
+                            {/* Action Buttons */}
+                            <div className="grid grid-cols-2" style={{ gap: '12px' }}>
                                 <button
                                     type="button"
                                     onClick={handleCloseModal}
-                                    className="flex-1 px-6 py-3.5 border border-slate-200 rounded-xl text-slate-700 font-bold hover:bg-slate-50 transition-colors"
+                                    className="w-full bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors"
+                                    style={{ padding: '14px 24px' }}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="flex-1 btn btn-primary py-3.5 shadow-lg shadow-purple-500/20"
+                                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-500/25 transition-all disabled:opacity-50"
+                                    style={{ padding: '14px 24px' }}
                                 >
-                                    {saving ? <Loader2 className="animate-spin mx-auto" size={20} /> : (editingProduct ? 'Save Changes' : 'Create Product')}
+                                    {saving ? (
+                                        <Loader2 className="animate-spin mx-auto" size={20} />
+                                    ) : (
+                                        editingProduct ? 'Save Changes' : 'Create Product'
+                                    )}
                                 </button>
                             </div>
                         </form>
