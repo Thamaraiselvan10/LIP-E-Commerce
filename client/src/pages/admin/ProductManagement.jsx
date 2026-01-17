@@ -368,7 +368,7 @@ export default function ProductManagement() {
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
-                                        placeholder="e.g. Luxury Lip Balm"
+                                        placeholder="Enter the Product Name"
                                         className="w-full bg-white border-b-2 border-gray-200 focus:border-purple-500 outline-none text-gray-800 placeholder-gray-400 transition-colors"
                                         style={{ padding: '10px 0' }}
                                         required
