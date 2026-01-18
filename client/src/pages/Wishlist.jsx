@@ -46,7 +46,7 @@ export default function Wishlist() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>Please login to view your wishlist</h2>
                     <p className="text-gray-500" style={{ marginBottom: '32px' }}>Save items you love and come back to them later</p>
-                    <Link to="/login" className="inline-flex items-center bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition-colors">
+                    <Link to="/login" className="inline-flex items-center bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-colors" style={{ padding: '12px 32px' }}>
                         Login Now
                     </Link>
                 </div>
@@ -71,7 +71,7 @@ export default function Wishlist() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>Your wishlist is empty</h2>
                     <p className="text-gray-500" style={{ marginBottom: '32px' }}>Start exploring products and save your favorites!</p>
-                    <Link to="/products" className="inline-flex items-center bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition-colors" style={{ gap: '8px' }}>
+                    <Link to="/products" className="inline-flex items-center bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-colors" style={{ gap: '8px', padding: '12px 32px' }}>
                         Explore Products <ArrowRight size={20} />
                     </Link>
                 </div>
@@ -85,7 +85,7 @@ export default function Wishlist() {
                 <div className="flex items-center" style={{ gap: '12px', marginBottom: '32px' }}>
                     <Heart className="text-purple-600 fill-purple-600" size={28} />
                     <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-                    <span className="bg-purple-100 text-purple-700 font-bold px-3 py-1 rounded-full text-sm">
+                    <span className="bg-purple-100 text-purple-700 font-bold rounded-full text-sm" style={{ padding: '4px 12px' }}>
                         {items.length}
                     </span>
                 </div>

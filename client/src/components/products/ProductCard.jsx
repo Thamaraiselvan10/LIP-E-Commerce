@@ -114,7 +114,8 @@ function ProductCard({ product }) {
 
                     {/* Hover Arrow Icon */}
                     <motion.div
-                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center"
+                        className="absolute w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center"
+                        style={{ top: '12px', right: '12px' }}
                         variants={arrowVariants}
                     >
                         <ArrowUpRight size={16} className="text-gray-700" />
@@ -126,7 +127,8 @@ function ProductCard({ product }) {
                             onClick={handleToggleWishlist}
                             onMouseEnter={() => setIsWishlistHovered(true)}
                             onMouseLeave={() => setIsWishlistHovered(false)}
-                            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center transition-transform hover:scale-110"
+                            className="absolute w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center transition-transform hover:scale-110"
+                            style={{ top: '12px', left: '12px' }}
                             initial={{ x: -10, opacity: 0 }}
                             whileHover={{ x: 0, opacity: 1 }} // This might conflict with parent variant, assume fine for now or adjust
                             animate={{ x: 0, opacity: 1 }}
@@ -182,7 +184,8 @@ function ProductCard({ product }) {
 
                     {/* Admin View-Only Badge */}
                     {userIsAdmin && (
-                        <div className="absolute bottom-3 left-3 right-3 py-2 px-4 rounded-xl bg-gray-800/90 backdrop-blur-sm flex items-center justify-center gap-2 text-sm text-white font-medium">
+                        <div className="absolute rounded-xl bg-gray-800/90 backdrop-blur-sm flex items-center justify-center gap-2 text-sm text-white font-medium"
+                            style={{ bottom: '12px', left: '12px', right: '12px', padding: '8px 16px' }}>
                             <ShieldCheck size={16} aria-hidden="true" />
                             View Only
                         </div>
@@ -212,7 +215,7 @@ function ProductCard({ product }) {
 
                     {/* Stock and Sold */}
                     {/* Footer Info: Admin sees Stock/Sold, User sees Ratings */}
-                    <div className="flex items-center mt-auto">
+                    <div className="flex items-center" style={{ marginTop: 'auto' }}>
                         {userIsAdmin ? (
                             <div className="flex items-center" style={{ gap: '16px' }}>
                                 <div className="flex items-center" style={{ gap: '4px' }}>

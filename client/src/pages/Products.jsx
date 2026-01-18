@@ -237,7 +237,11 @@ export default function Products() {
                                             <option key={option.value} value={option.value}>{option.label}</option>
                                         ))}
                                     </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                    <ChevronDown
+                                        className="absolute text-gray-400 pointer-events-none"
+                                        size={16}
+                                        style={{ right: '16px', top: '50%', transform: 'translateY(-50%)' }}
+                                    />
                                 </div>
                             </div>
                         </motion.div>
