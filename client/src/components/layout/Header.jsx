@@ -245,7 +245,9 @@ export default function Header() {
                                 </Link>
 
                                 {/* Wishlist */}
-                                <button
+                                <Link
+                                    to="/wishlist"
+                                    onClick={() => setShowProfileDropdown(false)}
                                     className="flex items-center w-full text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all group"
                                     style={{ padding: '12px 20px', gap: '14px' }}
                                     role="menuitem"
@@ -257,7 +259,7 @@ export default function Header() {
                                         <span className="text-sm font-medium block">Wishlist</span>
                                         <span className="text-xs text-gray-400">Your saved items</span>
                                     </div>
-                                </button>
+                                </Link>
 
                                 {/* Divider */}
                                 <div className="border-t border-gray-100" style={{ margin: '8px 20px' }} />
@@ -366,14 +368,15 @@ export default function Header() {
                                         <span className="text-sm font-medium">Orders</span>
                                     </Link>
 
-                                    {/* Favourites */}
-                                    <button
+                                    {/* Wishlist */}
+                                    <Link
+                                        to="/wishlist"
                                         className="flex items-center text-gray-600 hover:text-purple-600 transition-colors"
                                         style={{ gap: '8px' }}
                                     >
                                         <Heart size={20} />
-                                        <span className="text-sm font-medium">Favourites</span>
-                                    </button>
+                                        <span className="text-sm font-medium">Wishlist</span>
+                                    </Link>
 
                                     {/* Cart */}
                                     <Link

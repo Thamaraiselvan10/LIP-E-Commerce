@@ -22,6 +22,7 @@ const Orders = lazy(() => import('./pages/Orders'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
 
 // Public Pages (lazy loaded)
 const Contact = lazy(() => import('./pages/Contact'));
@@ -219,6 +220,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout><Profile /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <MainLayout><Wishlist /></MainLayout>
             </ProtectedRoute>
           }
         />

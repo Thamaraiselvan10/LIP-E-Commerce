@@ -7,8 +7,8 @@ const useCartStore = create((set, get) => ({
     isLoading: false,
     error: null,
 
-    fetchCart: async () => {
-        set({ isLoading: true });
+    fetchCart: async (silent = false) => {
+        if (!silent) set({ isLoading: true });
         try {
             const response = await cartAPI.get();
             set({
@@ -24,7 +24,7 @@ const useCartStore = create((set, get) => ({
     addToCart: async (productId, quantity = 1) => {
         try {
             await cartAPI.add(productId, quantity);
-            await get().fetchCart();
+            await get().fetchCart(true);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.response?.data?.error || 'Failed to add to cart' };
@@ -34,7 +34,7 @@ const useCartStore = create((set, get) => ({
     updateQuantity: async (itemId, quantity) => {
         try {
             await cartAPI.update(itemId, quantity);
-            await get().fetchCart();
+            await get().fetchCart(true);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.response?.data?.error || 'Failed to update cart' };
@@ -44,7 +44,7 @@ const useCartStore = create((set, get) => ({
     removeItem: async (itemId) => {
         try {
             await cartAPI.remove(itemId);
-            await get().fetchCart();
+            await get().fetchCart(true);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.response?.data?.error || 'Failed to remove item' };

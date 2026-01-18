@@ -80,3 +80,12 @@ CREATE TABLE IF NOT EXISTS cart_items (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(user_id, product_id)
 );
+
+-- Wishlist table
+CREATE TABLE IF NOT EXISTS wishlist_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, product_id)
+);
