@@ -10,6 +10,7 @@ import AdminLayout from './components/admin/AdminLayout';
 // Common Components
 import AnnouncementPopup from './components/common/AnnouncementPopup';
 import ToastBanner from './components/common/ToastBanner';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // Lazy loaded pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -97,6 +98,7 @@ function StaticPage({ title }) {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Toaster
         position="top-right"
         toastOptions={{

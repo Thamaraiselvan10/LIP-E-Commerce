@@ -18,6 +18,8 @@ export default function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [isFavorite, setIsFavorite] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isCartHovered, setIsCartHovered] = useState(false);
+    const [isBuyHovered, setIsBuyHovered] = useState(false);
     const { addToCart } = useCartStore();
     const { isAuthenticated, isAdmin } = useAuthStore();
 
@@ -115,7 +117,7 @@ export default function ProductDetail() {
     const specifications = [
         { label: 'SKU', value: `PM-${String(product.id).padStart(4, '0')}` },
         { label: 'Category', value: product.category || 'General' },
-        { label: 'Stock', value: `${product.stock} units` },
+        ...(userIsAdmin ? [{ label: 'Stock', value: `${product.stock} units` }] : []),
         { label: 'Material', value: 'Premium Quality' },
     ];
 
@@ -203,8 +205,8 @@ export default function ProductDetail() {
                                             key={index}
                                             onClick={() => setCurrentImageIndex(index)}
                                             className={`w-2.5 h-2.5 rounded-full transition-all ${index === currentImageIndex
-                                                    ? 'bg-purple-600 w-8'
-                                                    : 'bg-gray-300 hover:bg-purple-300'
+                                                ? 'bg-purple-600 w-8'
+                                                : 'bg-gray-300 hover:bg-purple-300'
                                                 }`}
                                         />
                                     ))}
@@ -269,7 +271,9 @@ export default function ProductDetail() {
                                     <Check className="text-white" size={12} />
                                 </div>
                                 <span className={`font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+                                    {product.stock > 0
+                                        ? (userIsAdmin ? `In Stock (${product.stock} available)` : 'In Stock')
+                                        : 'Out of Stock'}
                                 </span>
                             </div>
 
@@ -316,16 +320,45 @@ export default function ProductDetail() {
                                     <div className="flex flex-col" style={{ gap: '12px' }}>
                                         <button
                                             onClick={handleAddToCart}
-                                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all flex items-center justify-center"
-                                            style={{ gap: '10px', padding: '18px 32px' }}
+                                            onMouseEnter={() => setIsCartHovered(true)}
+                                            onMouseLeave={() => setIsCartHovered(false)}
+                                            style={{
+                                                width: '100%',
+                                                backgroundColor: isCartHovered ? '#7e22ce' : '#9333ea', // purple-700 : purple-600
+                                                color: 'white',
+                                                fontWeight: 'bold',
+                                                borderRadius: '0.75rem', // rounded-xl
+                                                boxShadow: isCartHovered
+                                                    ? '0 10px 15px -3px rgba(168, 85, 247, 0.4), 0 4px 6px -2px rgba(168, 85, 247, 0.2)'
+                                                    : '0 10px 15px -3px rgba(168, 85, 247, 0.25), 0 4px 6px -2px rgba(168, 85, 247, 0.1)',
+                                                transition: 'all 0.2s',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '10px',
+                                                padding: '18px 32px',
+                                                cursor: 'pointer',
+                                                border: 'none'
+                                            }}
                                         >
                                             <ShoppingCart size={20} />
                                             Add to Cart — ₹{(product.price * quantity).toFixed(2)}
                                         </button>
                                         <button
                                             onClick={handleBuyNow}
-                                            className="w-full bg-white hover:bg-purple-50 text-purple-700 font-bold rounded-xl border-2 border-purple-600 transition-all"
-                                            style={{ padding: '16px 32px' }}
+                                            onMouseEnter={() => setIsBuyHovered(true)}
+                                            onMouseLeave={() => setIsBuyHovered(false)}
+                                            style={{
+                                                width: '100%',
+                                                backgroundColor: isBuyHovered ? '#f5f3ff' : 'white', // purple-50 : white
+                                                color: '#7e22ce', // purple-700
+                                                fontWeight: 'bold',
+                                                borderRadius: '0.75rem', // rounded-xl
+                                                border: '2px solid #9333ea', // purple-600
+                                                transition: 'all 0.2s',
+                                                padding: '16px 32px',
+                                                cursor: 'pointer'
+                                            }}
                                         >
                                             Buy Now
                                         </button>

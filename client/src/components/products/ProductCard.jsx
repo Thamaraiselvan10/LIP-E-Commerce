@@ -1,7 +1,7 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { ShoppingCart, ShieldCheck, ArrowUpRight, Star } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 import useAuthStore from '../../store/authStore';
 import toast from 'react-hot-toast';
@@ -33,6 +33,7 @@ function ProductCard({ product }) {
     const { addToCart } = useCartStore();
     const { isAuthenticated, isAdmin } = useAuthStore();
     const navigate = useNavigate();
+    const [isHovered, setIsHovered] = useState(false);
 
     const handleAddToCart = async (e) => {
         e.preventDefault();
@@ -99,12 +100,35 @@ function ProductCard({ product }) {
                     {!userIsAdmin && (
                         <motion.button
                             onClick={handleAddToCart}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
                             disabled={product.stock <= 0}
                             aria-label={product.stock <= 0 ? 'Out of Stock' : `Add ${product.name} to cart`}
-                            className={`absolute bottom-4 left-4 right-4 py-3 px-5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2.5 ${product.stock <= 0
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-500/30'
-                                }`}
+                            style={{
+                                position: 'absolute',
+                                bottom: '16px',
+                                left: '16px',
+                                right: '16px',
+                                padding: '12px 20px',
+                                borderRadius: '0.75rem',
+                                fontWeight: '600',
+                                fontSize: '0.875rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                background: product.stock <= 0
+                                    ? '#e5e7eb'
+                                    : (isHovered
+                                        ? 'linear-gradient(to right, #7e22ce, #6b21a8)'
+                                        : 'linear-gradient(to right, #9333ea, #7e22ce)'),
+                                color: product.stock <= 0 ? '#9ca3af' : 'white',
+                                cursor: product.stock <= 0 ? 'not-allowed' : 'pointer',
+                                boxShadow: (!product.stock <= 0 && isHovered)
+                                    ? '0 10px 15px -3px rgba(168, 85, 247, 0.4)'
+                                    : '0 4px 6px -2px rgba(168, 85, 247, 0.1)',
+                                border: 'none'
+                            }}
                             variants={buttonVariants}
                             whileTap={{ scale: 0.98 }}
                         >
@@ -144,15 +168,26 @@ function ProductCard({ product }) {
                     </span>
 
                     {/* Stock and Sold */}
-                    <div className="flex items-center mt-auto" style={{ gap: '16px' }}>
-                        <div className="flex items-center" style={{ gap: '4px' }}>
-                            <span className="text-xs text-gray-400">Stock:</span>
-                            <span className="text-xs font-semibold text-gray-700">{product.stock}</span>
-                        </div>
-                        <div className="flex items-center" style={{ gap: '4px' }}>
-                            <span className="text-xs text-gray-400">Sold:</span>
-                            <span className="text-xs font-semibold text-gray-700">{soldCount}</span>
-                        </div>
+                    {/* Footer Info: Admin sees Stock/Sold, User sees Ratings */}
+                    <div className="flex items-center mt-auto">
+                        {userIsAdmin ? (
+                            <div className="flex items-center" style={{ gap: '16px' }}>
+                                <div className="flex items-center" style={{ gap: '4px' }}>
+                                    <span className="text-xs text-gray-400">Stock:</span>
+                                    <span className="text-xs font-semibold text-gray-700">{product.stock}</span>
+                                </div>
+                                <div className="flex items-center" style={{ gap: '4px' }}>
+                                    <span className="text-xs text-gray-400">Sold:</span>
+                                    <span className="text-xs font-semibold text-gray-700">{soldCount}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center" style={{ gap: '4px' }}>
+                                <Star size={14} className="text-amber-400 fill-amber-400" />
+                                <span className="text-sm font-medium text-gray-700">4.5</span>
+                                <span className="text-xs text-gray-400">(128 reviews)</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Link>
