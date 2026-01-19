@@ -161,85 +161,100 @@ export default function Products() {
             exit="exit"
         >
             <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
-                <div className="flex" style={{ gap: '32px' }}>
+                <div className="flex flex-col lg:flex-row" style={{ gap: '40px' }}>
 
-                    {/* Sidebar - Categories */}
+                    {/* Sidebar - Categories & Filters */}
                     <motion.aside
-                        className="hidden lg:block w-64 flex-shrink-0"
+                        className="hidden lg:block w-72 flex-shrink-0"
                         variants={sidebarVariants}
                         initial="hidden"
                         animate="visible"
                     >
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm sticky" style={{ top: '160px', padding: '24px' }}>
-                            <h3 className="text-lg font-bold text-gray-900" style={{ marginBottom: '20px' }}>
-                                Categories
-                            </h3>
-                            <nav className="flex flex-col" style={{ gap: '4px' }}>
-                                {categories.map((cat) => (
-                                    <motion.button
-                                        key={cat.key}
-                                        onClick={() => handleCategoryChange(cat.key)}
-                                        className={`flex items-center justify-between w-full text-left rounded-xl transition-all ${currentCategory === cat.key
-                                            ? 'bg-purple-50 text-purple-700'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                            }`}
-                                        style={{ padding: '12px 16px' }}
-                                        whileHover={{ x: 4 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        <span className={`font-medium ${currentCategory === cat.key ? 'text-purple-700' : ''}`}>
-                                            {cat.label}
-                                        </span>
-                                        <span className={`text-sm ${currentCategory === cat.key ? 'text-purple-500' : 'text-gray-400'}`}>
-                                            {categoryCounts[cat.key] || 0}
-                                        </span>
-                                    </motion.button>
-                                ))}
-                            </nav>
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky" style={{ top: '160px', padding: '28px' }}>
+                            <div className="flex items-center" style={{ gap: '10px', marginBottom: '24px' }}>
+                                <SlidersHorizontal size={20} className="text-purple-600" />
+                                <h3 className="text-lg font-bold text-gray-900">Filters</h3>
+                            </div>
+
+                            <div style={{ marginBottom: '32px' }}>
+                                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider" style={{ marginBottom: '16px', fontSize: '11px' }}>
+                                    Categories
+                                </h4>
+                                <nav className="flex flex-col" style={{ gap: '6px' }}>
+                                    {categories.map((cat) => (
+                                        <button
+                                            key={cat.key}
+                                            onClick={() => handleCategoryChange(cat.key)}
+                                            className={`flex items-center justify-between w-full text-left rounded-xl transition-all ${currentCategory === cat.key
+                                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
+                                                : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                                                }`}
+                                            style={{ padding: '12px 16px' }}
+                                        >
+                                            <span className="font-semibold text-sm">
+                                                {cat.label}
+                                            </span>
+                                            <span className={`text-xs px-2 py-1 rounded-lg ${currentCategory === cat.key ? 'bg-white/20' : 'bg-gray-100'}`}>
+                                                {categoryCounts[cat.key] || 0}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </nav>
+                            </div>
+
+                            <div>
+                                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider" style={{ marginBottom: '16px', fontSize: '11px' }}>
+                                    Availability
+                                </h4>
+                                <div className="space-y-3">
+                                    <label className="flex items-center cursor-pointer group" style={{ gap: '10px' }}>
+                                        <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer" />
+                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">In Stock</span>
+                                    </label>
+                                    <label className="flex items-center cursor-pointer group" style={{ gap: '10px' }}>
+                                        <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer" />
+                                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">On Sale</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </motion.aside>
 
                     {/* Main Content */}
                     <div className="flex-1 min-w-0">
                         {/* Header Section */}
-                        <motion.div
-                            className="flex flex-col lg:flex-row lg:items-center lg:justify-between"
-                            style={{ marginBottom: '24px' }}
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <div style={{ marginBottom: '16px' }}>
-                                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900" style={{ marginBottom: '4px' }}>
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between" style={{ marginBottom: '32px', gap: '20px' }}>
+                            <div>
+                                <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight" style={{ marginBottom: '4px' }}>
                                     {currentCategory
                                         ? categories.find(c => c.key === currentCategory)?.label || 'Products'
-                                        : 'All Products'
+                                        : 'All Collection'
                                     }
                                 </h1>
-                                <p className="text-gray-500 text-sm">
-                                    {loading ? 'Loading...' : `Showing ${products.length} products`}
+                                <p className="text-gray-500 font-medium">
+                                    {loading ? 'Discovering products...' : `Explore ${products.length} premium packaging solutions`}
                                 </p>
                             </div>
 
                             {/* Controls */}
-                            <div className="flex items-center" style={{ gap: '12px' }}>
+                            <div className="flex items-center" style={{ gap: '16px' }}>
                                 {/* Mobile Category Toggle */}
                                 <button
                                     onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-                                    className="lg:hidden flex items-center bg-white border border-gray-200 rounded-xl text-gray-600 hover:border-gray-300 transition-all"
-                                    style={{ padding: '12px', gap: '8px' }}
+                                    className="lg:hidden flex-1 flex items-center justify-center bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm transition-all"
+                                    style={{ padding: '12px 20px', gap: '8px' }}
                                 >
                                     <SlidersHorizontal size={18} />
-                                    <span className="text-sm font-medium">Filters</span>
+                                    <span className="text-sm font-bold">Filters</span>
                                 </button>
 
                                 {/* Sort Dropdown */}
-                                <div className="relative">
+                                <div className="relative flex-1 lg:flex-none">
                                     <select
                                         value={currentSortBy}
                                         onChange={(e) => handleSortChange(e.target.value)}
-                                        className="appearance-none bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer text-gray-700 text-sm"
-                                        style={{ padding: '12px 40px 12px 16px' }}
+                                        className="w-full appearance-none bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 cursor-pointer text-gray-700 text-sm font-bold shadow-sm"
+                                        style={{ padding: '12px 48px 12px 20px' }}
                                     >
                                         {sortOptions.map((option) => (
                                             <option key={option.value} value={option.value}>{option.label}</option>
@@ -247,39 +262,38 @@ export default function Products() {
                                     </select>
                                     <ChevronDown
                                         className="absolute text-gray-400 pointer-events-none"
-                                        size={16}
+                                        size={18}
                                         style={{ right: '16px', top: '50%', transform: 'translateY(-50%)' }}
                                     />
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
 
                         {/* Mobile Sidebar */}
                         <AnimatePresence>
                             {showMobileSidebar && (
                                 <motion.div
-                                    className="lg:hidden bg-white rounded-2xl border border-gray-100 shadow-sm"
-                                    style={{ padding: '20px', marginBottom: '24px' }}
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.2 }}
+                                    className="lg:hidden bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden"
+                                    style={{ padding: '24px', marginBottom: '32px' }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
                                 >
-                                    <h3 className="text-lg font-bold text-gray-900" style={{ marginBottom: '16px' }}>
+                                    <h3 className="text-lg font-bold text-gray-900" style={{ marginBottom: '20px' }}>
                                         Categories
                                     </h3>
-                                    <div className="flex flex-wrap" style={{ gap: '8px' }}>
+                                    <div className="flex flex-wrap" style={{ gap: '10px' }}>
                                         {categories.map((cat) => (
                                             <button
                                                 key={cat.key}
                                                 onClick={() => handleCategoryChange(cat.key)}
-                                                className={`rounded-xl font-medium transition-all ${currentCategory === cat.key
-                                                    ? 'bg-purple-600 text-white'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                className={`rounded-xl font-bold transition-all ${currentCategory === cat.key
+                                                    ? 'bg-purple-600 text-white shadow-lg'
+                                                    : 'bg-gray-100 text-gray-600'
                                                     }`}
-                                                style={{ padding: '10px 16px' }}
+                                                style={{ padding: '12px 20px', fontSize: '13px' }}
                                             >
-                                                {cat.label} ({categoryCounts[cat.key] || 0})
+                                                {cat.label}
                                             </button>
                                         ))}
                                     </div>
@@ -287,38 +301,17 @@ export default function Products() {
                             )}
                         </AnimatePresence>
 
-                        {/* Error State */}
-                        {error && (
-                            <motion.div
-                                className="bg-red-50 border border-red-100 rounded-2xl text-center"
-                                style={{ padding: '32px', marginBottom: '24px' }}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                            >
-                                <p className="text-red-600 font-medium">{error}</p>
-                                <button
-                                    onClick={loadProducts}
-                                    className="mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-all"
-                                    style={{ padding: '10px 20px' }}
-                                >
-                                    Try Again
-                                </button>
-                            </motion.div>
-                        )}
-
-                        {/* Products Grid */}
+                        {/* Results Grid */}
                         {loading ? (
-                            <div className="flex justify-center" style={{ padding: '96px 0' }}>
-                                <motion.div
-                                    className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full"
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                />
+                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ gap: '24px' }}>
+                                {[...Array(8)].map((_, i) => (
+                                    <div key={i} className="bg-white rounded-2xl aspect-[4/5] border border-gray-100 animate-pulse" />
+                                ))}
                             </div>
                         ) : products.length > 0 ? (
                             <motion.div
-                                className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                                style={{ gap: '20px' }}
+                                className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                                style={{ gap: '24px' }}
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
@@ -336,30 +329,25 @@ export default function Products() {
                             </motion.div>
                         ) : (
                             <motion.div
-                                className="text-center bg-white rounded-2xl border border-gray-100"
-                                style={{ padding: '96px 32px' }}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.3 }}
+                                className="text-center bg-white rounded-3xl border border-gray-100 shadow-sm"
+                                style={{ padding: '100px 32px' }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
                             >
-                                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center" style={{ margin: '0 auto 20px' }}>
-                                    <Package size={28} className="text-gray-400" />
+                                <div className="w-24 h-24 bg-purple-50 rounded-full flex items-center justify-center" style={{ margin: '0 auto 28px' }}>
+                                    <Package size={40} className="text-purple-200" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>No products found</h3>
-                                <p className="text-gray-500" style={{ marginBottom: '24px' }}>
-                                    {currentCategory ? 'Try selecting a different category' : 'No products available at the moment'}
+                                <h3 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '12px' }}>No matches found</h3>
+                                <p className="text-gray-500 text-lg" style={{ marginBottom: '32px' }}>
+                                    We couldn't find any products in this category at the moment.
                                 </p>
-                                {currentCategory && (
-                                    <motion.button
-                                        onClick={() => handleCategoryChange('')}
-                                        className="bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-all"
-                                        style={{ padding: '12px 24px' }}
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        View All Products
-                                    </motion.button>
-                                )}
+                                <button
+                                    onClick={() => handleCategoryChange('')}
+                                    className="bg-gray-900 text-white font-bold rounded-2xl transition-all hover:bg-black active:scale-95"
+                                    style={{ padding: '16px 32px' }}
+                                >
+                                    Browse all collection
+                                </button>
                             </motion.div>
                         )}
                     </div>

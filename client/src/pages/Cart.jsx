@@ -141,184 +141,171 @@ export default function Cart() {
 
     return (
         <motion.div
-            className="flex flex-col bg-gradient-to-b from-purple-50/50 to-white"
-            style={{ minHeight: '100vh', paddingTop: '64px' }}
+            className="flex flex-col bg-white"
+            style={{ minHeight: '100vh', paddingTop: '80px' }}
             variants={pageVariants}
             initial="initial"
             animate="animate"
             exit="exit"
         >
-            {/* Main Content - Fits Screen */}
-            <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
-                {/* Header Bar */}
-                <div className="bg-white border-b border-purple-100 flex-shrink-0" style={{ padding: '16px 24px' }}>
-                    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Shopping Cart</h1>
-                                <p className="text-gray-500 text-sm">{items.length} item(s) in your cart</p>
-                            </div>
-                            <button
-                                onClick={handleClearCart}
-                                className="text-red-500 hover:text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-all"
-                                style={{ padding: '8px 16px' }}
-                            >
-                                Clear Cart
-                            </button>
-                        </div>
-                    </div>
+            <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', padding: '0 24px' }}>
+                <div style={{ marginBottom: '40px' }}>
+                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight" style={{ marginBottom: '8px' }}>
+                        Your Basket
+                    </h1>
+                    <p className="text-gray-500 font-medium text-lg">
+                        {items.length === 0 ? 'Start adding premium supplies' : `You have ${items.length} premium products in your cart`}
+                    </p>
                 </div>
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-hidden" style={{ padding: '24px' }}>
-                    <div style={{ maxWidth: '1400px', margin: '0 auto', height: '100%' }}>
-                        <div className="grid lg:grid-cols-3 h-full" style={{ gap: '24px' }}>
-                            {/* Cart Items - Scrollable */}
-                            <div className="lg:col-span-2 flex flex-col overflow-hidden">
-                                <div className="flex-1 overflow-y-auto" style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '8px' }}>
-                                    {items.map((item) => {
-                                        const imageUrl = item.image_url
-                                            ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`)
-                                            : 'https://placehold.co/100x100/EEE/999?text=No+Image';
+                <div className="grid lg:grid-cols-3" style={{ gap: '48px', paddingBottom: '100px' }}>
+                    {/* Left: Cart Items */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <AnimatePresence mode="popLayout">
+                            {items.map((item) => {
+                                const imageUrl = item.image_url
+                                    ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`)
+                                    : 'https://placehold.co/120x120/f3f4f6/9ca3af?text=Product';
 
-                                        return (
-                                            <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-purple-50 hover:shadow-md transition-all flex-shrink-0" style={{ padding: '20px' }}>
-                                                <div className="flex" style={{ gap: '16px' }}>
-                                                    <img
-                                                        src={imageUrl}
-                                                        alt={item.name}
-                                                        className="w-20 h-20 object-cover rounded-xl bg-purple-50 flex-shrink-0"
-                                                        onError={(e) => {
-                                                            e.target.src = 'https://placehold.co/100x100/EEE/999?text=No+Image';
-                                                        }}
-                                                    />
-                                                    <div className="flex-1 min-w-0">
-                                                        <Link
-                                                            to={`/products/${item.product_id}`}
-                                                            className="font-bold text-gray-900 hover:text-purple-600 transition-colors truncate block"
+                                return (
+                                    <motion.div
+                                        key={item.id}
+                                        layout
+                                        variants={itemVariants}
+                                        className="bg-white rounded-3xl border border-gray-100 p-6 flex flex-col sm:flex-row gap-6 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all group"
+                                    >
+                                        <div className="w-full sm:w-32 h-32 bg-gray-50 rounded-2xl overflow-hidden flex-shrink-0">
+                                            <img
+                                                src={imageUrl}
+                                                alt={item.name}
+                                                className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                                            />
+                                        </div>
+
+                                        <div className="flex-1 flex flex-col">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <Link to={`/products/${item.product_id}`} className="text-xl font-bold text-gray-900 hover:text-purple-600 transition-colors">
+                                                        {item.name}
+                                                    </Link>
+                                                    <p className="text-sm font-medium text-gray-400 mt-1 uppercase tracking-widest">
+                                                        Category: {item.category || 'General'}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleRemove(item.id)}
+                                                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
+                                            </div>
+
+                                            <div className="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex items-center bg-gray-50 border border-gray-100 rounded-2xl p-1">
+                                                        <button
+                                                            onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                                            disabled={updating === item.id || item.quantity <= 1}
+                                                            className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl disabled:opacity-30 transition-all shadow-sm"
                                                         >
-                                                            {item.name}
-                                                        </Link>
-                                                        <p className="text-lg font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent" style={{ marginTop: '4px' }}>
-                                                            ₹{item.price?.toFixed(2)}
-                                                        </p>
-
-                                                        <div className="flex items-center justify-between" style={{ marginTop: '12px' }}>
-                                                            <div className="flex items-center" style={{ gap: '6px' }}>
-                                                                <button
-                                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                                                                    disabled={updating === item.id || item.quantity <= 1}
-                                                                    className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-all"
-                                                                >
-                                                                    <Minus size={12} />
-                                                                </button>
-                                                                <span className="w-8 text-center font-bold text-sm">
-                                                                    {updating === item.id ? <Loader2 size={12} className="animate-spin" style={{ margin: '0 auto' }} /> : item.quantity}
-                                                                </span>
-                                                                <button
-                                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                                                                    disabled={updating === item.id || item.quantity >= item.stock}
-                                                                    className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-all"
-                                                                >
-                                                                    <Plus size={12} />
-                                                                </button>
-                                                            </div>
-
-                                                            <div className="flex items-center" style={{ gap: '12px' }}>
-                                                                <span className="font-bold text-gray-900">
-                                                                    ₹{(item.price * item.quantity).toFixed(2)}
-                                                                </span>
-                                                                <button
-                                                                    onClick={() => handleRemove(item.id)}
-                                                                    className="text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                                                    style={{ padding: '6px' }}
-                                                                >
-                                                                    <Trash2 size={16} />
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                                            <Minus size={16} />
+                                                        </button>
+                                                        <span className="w-12 text-center font-bold text-gray-900">
+                                                            {updating === item.id ? <Loader2 size={16} className="animate-spin mx-auto text-purple-600" /> : item.quantity}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                                            disabled={updating === item.id || item.quantity >= (item.stock || 999)}
+                                                            className="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl disabled:opacity-30 transition-all shadow-sm"
+                                                        >
+                                                            <Plus size={16} />
+                                                        </button>
                                                     </div>
                                                 </div>
+
+                                                <div className="text-right">
+                                                    <p className="text-sm text-gray-400 font-medium">Subtotal</p>
+                                                    <p className="text-2xl font-black text-gray-900">
+                                                        ₹{(item.price * item.quantity).toFixed(2)}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        );
-                                    })}
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
+
+                        {items.length > 0 && (
+                            <button
+                                onClick={handleClearCart}
+                                className="text-gray-400 hover:text-red-500 text-sm font-bold transition-colors flex items-center gap-2"
+                                style={{ padding: '8px' }}
+                            >
+                                <Trash2 size={16} />
+                                Empty my basket
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Right: Summary */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-gray-900 rounded-[32px] p-8 text-white sticky" style={{ top: '140px' }}>
+                            <h2 className="text-2xl font-bold mb-8">Summary</h2>
+
+                            <div className="space-y-4 mb-8">
+                                <div className="flex justify-between text-gray-400 font-medium">
+                                    <span>Subtotal</span>
+                                    <span className="text-white font-bold">₹{total.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-gray-400 font-medium">
+                                    <span>GST (18%)</span>
+                                    <span className="text-white font-bold">₹{gst.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-gray-400 font-medium">
+                                    <span>Shipping</span>
+                                    <div className="flex items-center gap-1.5">
+                                        <Truck size={16} className="text-green-400" />
+                                        <span className="text-green-400 font-bold uppercase text-xs tracking-widest">Free</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Order Summary - Fixed */}
-                            <div className="lg:col-span-1">
-                                <div className="bg-white rounded-2xl shadow-lg border border-purple-100 h-full flex flex-col" style={{ padding: '24px' }}>
-                                    <h2 className="text-xl font-bold text-gray-900" style={{ marginBottom: '20px' }}>Order Summary</h2>
+                            <div className="border-t border-white/10 pt-6 mb-10">
+                                <div className="flex justify-between items-end">
+                                    <span className="text-gray-400 font-bold uppercase tracking-widest text-sm">Total Pay</span>
+                                    <span className="text-4xl font-black text-white">
+                                        ₹{grandTotal.toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-                                        <div className="flex justify-between text-gray-600 text-sm">
-                                            <span>Subtotal ({items.length} items)</span>
-                                            <span className="font-medium">₹{total.toFixed(2)}</span>
-                                        </div>
-                                        <div className="flex justify-between text-gray-600 text-sm">
-                                            <span>Shipping</span>
-                                            <span className="text-green-600 font-medium">Free</span>
-                                        </div>
-                                        <div className="flex justify-between text-gray-600 text-sm">
-                                            <span>GST (18%)</span>
-                                            <span className="font-medium">₹{gst.toFixed(2)}</span>
-                                        </div>
-                                        <div className="border-t border-purple-100" style={{ paddingTop: '12px' }}>
-                                            <div className="flex justify-between text-lg font-bold">
-                                                <span>Total</span>
-                                                <span className="bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                                                    ₹{grandTotal.toFixed(2)}
-                                                </span>
-                                            </div>
-                                        </div>
+                            <button
+                                onClick={() => navigate('/checkout')}
+                                className="w-full bg-white text-gray-900 font-black py-5 rounded-2xl hover:bg-purple-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-black/20"
+                            >
+                                Continue to Checkout
+                                <ArrowRight size={20} />
+                            </button>
+
+                            {/* Trust Details */}
+                            <div className="mt-10 space-y-4 pt-8 border-t border-white/5">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-purple-400">
+                                        <Shield size={20} />
                                     </div>
-
-                                    {/* Promo Code */}
-                                    <div style={{ marginBottom: '20px' }}>
-                                        <div className="flex" style={{ gap: '8px' }}>
-                                            <input
-                                                type="text"
-                                                placeholder="Promo code"
-                                                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                                                style={{ padding: '10px 12px' }}
-                                            />
-                                            <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all text-sm" style={{ padding: '10px 14px' }}>Apply</button>
-                                        </div>
+                                    <div>
+                                        <p className="text-sm font-bold">Secure Payment</p>
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">SSL Encrypted Transaction</p>
                                     </div>
-
-                                    <button
-                                        onClick={() => navigate('/checkout')}
-                                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 transition-all flex items-center justify-center"
-                                        style={{ padding: '14px', gap: '8px' }}
-                                    >
-                                        Checkout
-                                        <ArrowRight size={18} />
-                                    </button>
-
-                                    <Link
-                                        to="/products"
-                                        className="block text-center text-purple-600 hover:text-purple-700 font-medium text-sm"
-                                        style={{ marginTop: '12px' }}
-                                    >
-                                        Continue Shopping
-                                    </Link>
-
-                                    {/* Trust Badges */}
-                                    <div className="border-t border-purple-100 mt-auto" style={{ paddingTop: '16px', marginTop: '20px' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            <div className="flex items-center text-xs text-gray-500" style={{ gap: '8px' }}>
-                                                <Shield size={14} className="text-green-500" />
-                                                <span>Secure checkout</span>
-                                            </div>
-                                            <div className="flex items-center text-xs text-gray-500" style={{ gap: '8px' }}>
-                                                <Truck size={14} className="text-purple-500" />
-                                                <span>Free shipping above ₹2000</span>
-                                            </div>
-                                            <div className="flex items-center text-xs text-gray-500" style={{ gap: '8px' }}>
-                                                <Sparkles size={14} className="text-amber-500" />
-                                                <span>Quality guaranteed</span>
-                                            </div>
-                                        </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-amber-400">
+                                        <Sparkles size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold">Satisfaction Guarantee</p>
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">30-Day Easy Returns</p>
                                     </div>
                                 </div>
                             </div>

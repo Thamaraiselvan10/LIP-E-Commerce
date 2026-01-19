@@ -14,6 +14,26 @@ router.post('/', authenticateToken, (req, res) => {
             return res.status(400).json({ error: 'Order must have at least one item' });
         }
 
+        // Check for duplicate order in the last 2 minutes
+        const recentOrder = db.prepare(`
+            SELECT id FROM orders 
+            WHERE user_id = ? AND total > 0 
+            AND created_at > datetime('now', '-2 minutes')
+            ORDER BY created_at DESC LIMIT 1
+        `).get(req.user.id);
+
+        if (recentOrder) {
+            // Further verify if items are identical (simplified check)
+            const recentItems = db.prepare('SELECT product_id, quantity FROM order_items WHERE order_id = ?').all(recentOrder.id);
+            const isDuplicate = items.length === recentItems.length && items.every(item =>
+                recentItems.find(ri => ri.product_id === item.productId && ri.quantity === item.quantity)
+            );
+
+            if (isDuplicate) {
+                return res.status(409).json({ error: 'Duplicate order detected. Please wait a moment.' });
+            }
+        }
+
         // Calculate total
         let total = 0;
         for (const item of items) {

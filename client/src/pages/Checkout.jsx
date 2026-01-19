@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { CreditCard, Truck, CheckCircle, Loader2, MapPin, Phone, User, ArrowLeft, Shield, Package, Sparkles } from 'lucide-react';
 import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 import { ordersAPI } from '../services/api';
 import toast from 'react-hot-toast';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function Checkout() {
     const { items, total, fetchCart } = useCartStore();
@@ -126,277 +129,275 @@ export default function Checkout() {
     }
 
     return (
-        <div className="flex flex-col bg-gradient-to-b from-purple-50/50 to-white" style={{ minHeight: '100vh', paddingTop: '64px' }}>
-            {/* Main Content - Fits Screen */}
-            <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
-                {/* Header Bar */}
-                <div className="bg-white border-b border-purple-100 flex-shrink-0" style={{ padding: '12px 24px' }}>
-                    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                        <div className="flex items-center justify-between">
-                            <button
-                                onClick={() => step === 1 ? navigate('/cart') : setStep(1)}
-                                className="flex items-center text-gray-600 hover:text-purple-600 transition-colors"
-                                style={{ gap: '8px' }}
-                            >
-                                <ArrowLeft size={18} />
-                                <span className="font-medium text-sm">{step === 1 ? 'Back to Cart' : 'Back'}</span>
-                            </button>
+        <div className="min-h-screen bg-white" style={{ paddingTop: '80px' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+                {/* Header with Progress */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-gray-100 pb-8">
+                    <div>
+                        <button
+                            onClick={() => step === 1 ? navigate('/cart') : setStep(1)}
+                            className="text-gray-400 hover:text-purple-600 font-bold flex items-center gap-2 mb-2 transition-colors uppercase tracking-widest text-xs"
+                        >
+                            <ArrowLeft size={16} />
+                            {step === 1 ? 'Back to Basket' : 'Back to Shipping'}
+                        </button>
+                        <h1 className="text-4xl font-black text-gray-900">Checkout</h1>
+                    </div>
 
-                            {/* Progress Steps */}
-                            <div className="flex items-center" style={{ gap: '8px' }}>
-                                <div className="flex items-center" style={{ gap: '6px' }}>
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${step >= 1 ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                                        <Truck size={14} />
-                                    </div>
-                                    <span className={`font-medium text-xs hidden sm:block ${step >= 1 ? 'text-gray-900' : 'text-gray-400'}`}>Shipping</span>
-                                </div>
-                                <div className={`w-8 h-0.5 rounded-full ${step >= 2 ? 'bg-purple-500' : 'bg-gray-200'}`}></div>
-                                <div className="flex items-center" style={{ gap: '6px' }}>
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${step >= 2 ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                                        <CreditCard size={14} />
-                                    </div>
-                                    <span className={`font-medium text-xs hidden sm:block ${step >= 2 ? 'text-gray-900' : 'text-gray-400'}`}>Payment</span>
-                                </div>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold transition-all ${step >= 1 ? 'bg-purple-600 text-white shadow-lg shadow-purple-200' : 'bg-gray-100 text-gray-400'}`}>
+                                1
                             </div>
-
-                            <span className="text-xs text-gray-500">Step {step}/2</span>
+                            <span className={`text-sm font-bold uppercase tracking-tight ${step >= 1 ? 'text-gray-900' : 'text-gray-400'}`}>Shipping</span>
+                        </div>
+                        <div className="w-12 h-px bg-gray-200" />
+                        <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold transition-all ${step >= 2 ? 'bg-purple-600 text-white shadow-lg shadow-purple-200' : 'bg-gray-100 text-gray-400'}`}>
+                                2
+                            </div>
+                            <span className={`text-sm font-bold uppercase tracking-tight ${step >= 2 ? 'text-gray-900' : 'text-gray-400'}`}>Payment</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-hidden" style={{ padding: '20px 24px' }}>
-                    <div style={{ maxWidth: '1400px', margin: '0 auto', height: '100%' }}>
-                        <div className="grid lg:grid-cols-3 h-full" style={{ gap: '24px' }}>
-                            {/* Form - Scrollable */}
-                            <div className="lg:col-span-2 flex flex-col overflow-hidden">
-                                <div className="bg-white rounded-2xl shadow-sm border border-purple-100 flex-1 overflow-y-auto" style={{ padding: '24px' }}>
-                                    {step === 1 && (
-                                        <>
-                                            <h2 className="text-lg font-bold flex items-center" style={{ marginBottom: '20px', gap: '10px' }}>
-                                                <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                    <MapPin className="text-purple-600" size={18} />
-                                                </div>
-                                                Shipping Details
-                                            </h2>
-                                            <div className="grid md:grid-cols-2" style={{ gap: '16px' }}>
-                                                <div className="md:col-span-2">
-                                                    <label className="block text-xs font-medium text-gray-700" style={{ marginBottom: '6px' }}>Full Name</label>
-                                                    <div className="relative">
-                                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                                        <input
-                                                            type="text"
-                                                            name="name"
-                                                            value={formData.name}
-                                                            onChange={handleChange}
-                                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                                                            style={{ padding: '12px 12px 12px 40px' }}
-                                                            placeholder="John Doe"
-                                                        />
+                <div className="grid lg:grid-cols-3 gap-12 pb-20">
+                    {/* Left: Forms */}
+                    <div className="lg:col-span-2">
+                        {step === 1 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="space-y-8"
+                            >
+                                <div className="bg-white rounded-[32px] border border-gray-100 p-8 md:p-12">
+                                    <h2 className="text-2xl font-bold mb-8 flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
+                                            <Truck size={24} />
+                                        </div>
+                                        Shipping Information
+                                    </h2>
+
+                                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                                        <div className="md:col-span-2">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Recipient Name</label>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                className="w-full bg-gray-50 border border-transparent focus:border-purple-500 focus:bg-white rounded-2xl px-6 py-4 outline-none transition-all font-medium"
+                                                placeholder="e.g. Rahul Sharma"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Primary Phone</label>
+                                            <div className="relative">
+                                                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-bold">+91</span>
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    value={formData.phone}
+                                                    onChange={handleChange}
+                                                    className="w-full bg-gray-50 border border-transparent focus:border-purple-500 focus:bg-white rounded-2xl pl-16 pr-6 py-4 outline-none transition-all font-medium"
+                                                    placeholder="98765 43210"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Full Address</label>
+                                            <textarea
+                                                name="address"
+                                                value={formData.address}
+                                                onChange={handleChange}
+                                                className="w-full bg-gray-50 border border-transparent focus:border-purple-500 focus:bg-white rounded-2xl px-6 py-4 outline-none transition-all font-medium resize-none"
+                                                rows="3"
+                                                placeholder="Flat/House No., Building, Street Name..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">City</label>
+                                            <input
+                                                type="text"
+                                                name="city"
+                                                value={formData.city}
+                                                onChange={handleChange}
+                                                className="w-full bg-gray-50 border border-transparent focus:border-purple-500 focus:bg-white rounded-2xl px-6 py-4 outline-none transition-all font-medium"
+                                                placeholder="Chennai"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">State</label>
+                                            <input
+                                                type="text"
+                                                name="state"
+                                                value={formData.state}
+                                                onChange={handleChange}
+                                                className="w-full bg-gray-50 border border-transparent focus:border-purple-500 focus:bg-white rounded-2xl px-6 py-4 outline-none transition-all font-medium"
+                                                placeholder="Tamil Nadu"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Pincode</label>
+                                            <input
+                                                type="text"
+                                                name="pincode"
+                                                value={formData.pincode}
+                                                onChange={handleChange}
+                                                className="w-full bg-gray-50 border border-transparent focus:border-purple-500 focus:bg-white rounded-2xl px-6 py-4 outline-none transition-all font-medium"
+                                                placeholder="600001"
+                                                maxLength="6"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => validateForm() && setStep(2)}
+                                        className="w-full mt-12 bg-purple-600 text-white font-black py-5 rounded-2xl hover:bg-purple-700 transition-all shadow-xl shadow-purple-100 flex items-center justify-center gap-3 active:scale-95"
+                                    >
+                                        Proceed to Payment
+                                        <CreditCard size={20} />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {step === 2 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="space-y-8"
+                            >
+                                <div className="bg-white rounded-[32px] border border-gray-100 p-8 md:p-12">
+                                    <h2 className="text-2xl font-bold mb-8 flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
+                                            <CreditCard size={24} />
+                                        </div>
+                                        Payment Method
+                                    </h2>
+
+                                    <div className="space-y-4">
+                                        <label className={`block group relative cursor-pointer`}>
+                                            <input
+                                                type="radio"
+                                                name="paymentMethod"
+                                                value="cod"
+                                                checked={formData.paymentMethod === 'cod'}
+                                                onChange={handleChange}
+                                                className="peer sr-only"
+                                            />
+                                            <div className="p-6 rounded-3xl border-2 transition-all peer-checked:border-purple-600 peer-checked:bg-purple-50/50 border-gray-100 bg-white hover:border-purple-200">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
+                                                            <Truck className="text-gray-900" size={20} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-bold text-gray-900">Cash on Delivery</p>
+                                                            <p className="text-xs text-gray-500 font-medium">Pay securely at your doorstep</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-6 h-6 rounded-full border-2 border-gray-200 peer-checked:border-purple-600 flex items-center justify-center">
+                                                        <div className={`w-3 h-3 rounded-full bg-purple-600 transition-transform ${formData.paymentMethod === 'cod' ? 'scale-100' : 'scale-0'}`} />
                                                     </div>
                                                 </div>
-                                                <div className="md:col-span-2">
-                                                    <label className="block text-xs font-medium text-gray-700" style={{ marginBottom: '6px' }}>Phone Number</label>
-                                                    <div className="relative">
-                                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                                        <input
-                                                            type="tel"
-                                                            name="phone"
-                                                            value={formData.phone}
-                                                            onChange={handleChange}
-                                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                                                            style={{ padding: '12px 12px 12px 40px' }}
-                                                            placeholder="+91 98765 43210"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="md:col-span-2">
-                                                    <label className="block text-xs font-medium text-gray-700" style={{ marginBottom: '6px' }}>Address</label>
-                                                    <textarea
-                                                        name="address"
-                                                        value={formData.address}
-                                                        onChange={handleChange}
-                                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none text-sm"
-                                                        rows="2"
-                                                        style={{ padding: '12px' }}
-                                                        placeholder="Street address, building..."
-                                                    />
+                                            </div>
+                                        </label>
+
+                                        <div className="p-6 rounded-3xl border-2 border-dashed border-gray-100 opacity-60 flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
+                                                    <CreditCard className="text-gray-400" size={20} />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-gray-700" style={{ marginBottom: '6px' }}>City</label>
-                                                    <input
-                                                        type="text"
-                                                        name="city"
-                                                        value={formData.city}
-                                                        onChange={handleChange}
-                                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                                                        style={{ padding: '12px' }}
-                                                        placeholder="Chennai"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-700" style={{ marginBottom: '6px' }}>State</label>
-                                                    <input
-                                                        type="text"
-                                                        name="state"
-                                                        value={formData.state}
-                                                        onChange={handleChange}
-                                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                                                        style={{ padding: '12px' }}
-                                                        placeholder="Tamil Nadu"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-700" style={{ marginBottom: '6px' }}>Pincode</label>
-                                                    <input
-                                                        type="text"
-                                                        name="pincode"
-                                                        value={formData.pincode}
-                                                        onChange={handleChange}
-                                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                                                        style={{ padding: '12px' }}
-                                                        placeholder="600001"
-                                                        maxLength="6"
-                                                    />
+                                                    <p className="font-bold text-gray-400">Online Payment</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Available Soon</p>
                                                 </div>
                                             </div>
-                                            <button
-                                                onClick={() => validateForm() && setStep(2)}
-                                                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center"
-                                                style={{ marginTop: '24px', padding: '14px', gap: '8px' }}
-                                            >
-                                                Continue to Payment
-                                                <CreditCard size={16} />
-                                            </button>
-                                        </>
-                                    )}
+                                        </div>
+                                    </div>
 
-                                    {step === 2 && (
-                                        <>
-                                            <h2 className="text-lg font-bold flex items-center" style={{ marginBottom: '20px', gap: '10px' }}>
-                                                <div className="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center">
-                                                    <CreditCard className="text-amber-600" size={18} />
-                                                </div>
-                                                Payment Method
-                                            </h2>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                <label className={`flex items-center border-2 rounded-xl cursor-pointer transition-all ${formData.paymentMethod === 'cod' ? 'border-purple-400 bg-purple-50' : 'border-gray-200 hover:border-purple-200'}`} style={{ padding: '16px' }}>
-                                                    <input
-                                                        type="radio"
-                                                        name="paymentMethod"
-                                                        value="cod"
-                                                        checked={formData.paymentMethod === 'cod'}
-                                                        onChange={handleChange}
-                                                        className="w-4 h-4 text-purple-600"
-                                                    />
-                                                    <div style={{ marginLeft: '12px', flex: 1 }}>
-                                                        <p className="font-semibold text-gray-900 text-sm">Cash on Delivery</p>
-                                                        <p className="text-xs text-gray-500">Pay when order arrives</p>
-                                                    </div>
-                                                    <span className="bg-green-100 text-green-700 text-xs font-bold rounded-lg" style={{ padding: '3px 8px' }}>Available</span>
-                                                </label>
-                                                <label className="flex items-center border-2 border-gray-200 rounded-xl cursor-not-allowed opacity-60" style={{ padding: '16px' }}>
-                                                    <input type="radio" disabled className="w-4 h-4" />
-                                                    <div style={{ marginLeft: '12px', flex: 1 }}>
-                                                        <p className="font-semibold text-gray-700 text-sm">Online Payment</p>
-                                                        <p className="text-xs text-gray-500">UPI, Cards, Net Banking</p>
-                                                    </div>
-                                                    <span className="bg-gray-100 text-gray-500 text-xs font-bold rounded-lg" style={{ padding: '3px 8px' }}>Soon</span>
-                                                </label>
-                                            </div>
+                                    <div className="mt-12 p-8 bg-gray-50 rounded-3xl border border-gray-100">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <h3 className="font-bold text-gray-900">Confirm Shipping Address</h3>
+                                            <button onClick={() => setStep(1)} className="text-purple-600 font-bold text-xs uppercase tracking-widest">Edit</button>
+                                        </div>
+                                        <div className="text-sm text-gray-600 space-y-1 font-medium">
+                                            <p className="font-bold text-gray-900 mb-1">{formData.name}</p>
+                                            <p>{formData.address}</p>
+                                            <p>{formData.city}, {formData.state} - {formData.pincode}</p>
+                                            <p className="pt-2 text-gray-900">+91 {formData.phone}</p>
+                                        </div>
+                                    </div>
 
-                                            {/* Shipping Summary */}
-                                            <div className="bg-gray-50 rounded-xl border border-gray-200" style={{ marginTop: '20px', padding: '16px' }}>
-                                                <h4 className="font-semibold text-gray-800 text-sm" style={{ marginBottom: '8px' }}>Shipping To:</h4>
-                                                <p className="text-gray-600 text-sm">{formData.name}</p>
-                                                <p className="text-gray-600 text-xs">{formData.address}</p>
-                                                <p className="text-gray-600 text-xs">{formData.city}, {formData.state} - {formData.pincode}</p>
-                                            </div>
+                                    <button
+                                        onClick={handlePlaceOrder}
+                                        disabled={loading}
+                                        className="w-full mt-12 bg-gray-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-3 active:scale-95 disabled:bg-gray-400 disabled:shadow-none"
+                                    >
+                                        {loading ? (
+                                            <Loader2 className="animate-spin" size={20} />
+                                        ) : (
+                                            <>Place My Order — ₹{grandTotal.toFixed(2)}</>
+                                        )}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
 
-                                            <div className="flex" style={{ gap: '12px', marginTop: '24px' }}>
-                                                <button
-                                                    onClick={() => setStep(1)}
-                                                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all"
-                                                    style={{ padding: '14px' }}
-                                                >
-                                                    Back
-                                                </button>
-                                                <button
-                                                    onClick={handlePlaceOrder}
-                                                    disabled={loading}
-                                                    className="flex-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center"
-                                                    style={{ padding: '14px', gap: '8px' }}
-                                                >
-                                                    {loading ? <Loader2 className="animate-spin" size={18} /> : (
-                                                        <>Place Order<CheckCircle size={16} /></>
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
+                    {/* Right: Order Summary Sticky */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-white rounded-[32px] border border-gray-100 p-8 sticky" style={{ top: '120px' }}>
+                            <h2 className="text-xl font-bold mb-6">Order Detail</h2>
+
+                            <div className="space-y-4 mb-8 max-h-[300px] overflow-y-auto pr-2 scrollbar-hide">
+                                {items.map((item) => (
+                                    <div key={item.id} className="flex gap-4">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-xl flex-shrink-0 overflow-hidden">
+                                            <img
+                                                src={item.image_url ? (item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`) : 'https://placehold.co/60x60'}
+                                                alt={item.name}
+                                                className="w-full h-full object-contain p-2"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-bold text-sm text-gray-900 truncate">{item.name}</p>
+                                            <p className="text-xs text-gray-400 font-medium">Qty: {item.quantity}</p>
+                                            <p className="text-sm font-bold text-gray-900 mt-0.5">₹{(item.price * item.quantity).toFixed(2)}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="space-y-4 pt-6 border-t border-gray-50">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-400 font-medium">Subtotal</span>
+                                    <span className="text-gray-900 font-bold">₹{total.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-400 font-medium">GST (18%)</span>
+                                    <span className="text-gray-900 font-bold">₹{gst.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-400 font-medium tracking-tight">Shipping</span>
+                                    <span className="text-green-500 font-bold uppercase text-[10px] tracking-widest">Free</span>
+                                </div>
+                                <div className="flex justify-between items-end pt-4 border-t border-gray-50">
+                                    <span className="text-gray-900 font-black uppercase tracking-tight text-xs">Final Amount</span>
+                                    <span className="text-3xl font-black text-gray-900">₹{grandTotal.toFixed(2)}</span>
                                 </div>
                             </div>
 
-                            {/* Order Summary - Fixed */}
-                            <div className="lg:col-span-1">
-                                <div className="bg-white rounded-2xl shadow-lg border border-purple-100 h-full flex flex-col" style={{ padding: '20px' }}>
-                                    <h2 className="text-lg font-bold text-gray-900" style={{ marginBottom: '16px' }}>Order Summary</h2>
-
-                                    <div className="flex-1 overflow-y-auto" style={{ maxHeight: '150px', marginBottom: '12px' }}>
-                                        {items.map((item) => (
-                                            <div key={item.id} className="flex justify-between text-sm border-b border-gray-100 last:border-0" style={{ padding: '10px 0' }}>
-                                                <div className="flex items-center" style={{ gap: '10px' }}>
-                                                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                        <Package size={14} className="text-purple-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="text-gray-800 font-medium block text-xs">{item.name}</span>
-                                                        <span className="text-gray-500 text-xs">×{item.quantity}</span>
-                                                    </div>
-                                                </div>
-                                                <span className="font-semibold text-sm">₹{(item.price * item.quantity).toFixed(2)}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="border-t border-purple-100" style={{ paddingTop: '12px' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            <div className="flex justify-between text-gray-600 text-sm">
-                                                <span>Subtotal</span>
-                                                <span className="font-medium">₹{total.toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex justify-between text-gray-600 text-sm">
-                                                <span>Shipping</span>
-                                                <span className="text-green-600 font-medium">Free</span>
-                                            </div>
-                                            <div className="flex justify-between text-gray-600 text-sm">
-                                                <span>GST (18%)</span>
-                                                <span className="font-medium">₹{gst.toFixed(2)}</span>
-                                            </div>
-                                            <div className="border-t border-purple-100" style={{ paddingTop: '8px', marginTop: '4px' }}>
-                                                <div className="flex justify-between text-lg font-bold">
-                                                    <span>Total</span>
-                                                    <span className="bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                                                        ₹{grandTotal.toFixed(2)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Trust Badges */}
-                                    <div className="border-t border-purple-100 mt-auto" style={{ paddingTop: '12px', marginTop: '16px' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                            <div className="flex items-center text-xs text-gray-500" style={{ gap: '6px' }}>
-                                                <Shield size={12} className="text-green-500" />
-                                                <span>Secure checkout</span>
-                                            </div>
-                                            <div className="flex items-center text-xs text-gray-500" style={{ gap: '6px' }}>
-                                                <Truck size={12} className="text-purple-500" />
-                                                <span>Free shipping above ₹2000</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                            {/* Guard Details */}
+                            <div className="mt-8 space-y-3">
+                                <div className="flex items-center gap-3 text-gray-400">
+                                    <Shield size={16} />
+                                    <span className="text-[11px] font-bold uppercase tracking-wider">Secure SSL Transaction</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-gray-400">
+                                    <Package size={16} />
+                                    <span className="text-[11px] font-bold uppercase tracking-wider">Quality Inspected Goods</span>
                                 </div>
                             </div>
                         </div>
