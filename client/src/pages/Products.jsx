@@ -303,14 +303,14 @@ export default function Products() {
 
                         {/* Results Grid */}
                         {loading ? (
-                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ gap: '24px' }}>
+                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr" style={{ gap: '24px' }}>
                                 {[...Array(8)].map((_, i) => (
                                     <div key={i} className="bg-white rounded-2xl aspect-[4/5] border border-gray-100 animate-pulse" />
                                 ))}
                             </div>
                         ) : products.length > 0 ? (
                             <motion.div
-                                className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                                className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr"
                                 style={{ gap: '24px' }}
                                 variants={containerVariants}
                                 initial="hidden"

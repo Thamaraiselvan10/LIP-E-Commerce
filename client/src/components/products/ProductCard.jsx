@@ -64,7 +64,7 @@ function ProductCard({ product }) {
                 whileHover={{ y: -8 }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className="group relative h-full flex flex-col bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-purple-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgb(147,51,234,0.08)] transition-all duration-500"
+                className="group relative h-full flex flex-col bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-purple-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgb(147,51,234,0.08)] transition-all duration-500"
             >
                 {/* Image Section */}
                 <div className="relative aspect-square overflow-hidden bg-gray-50/50">
@@ -132,9 +132,9 @@ function ProductCard({ product }) {
                 </div>
 
                 {/* Info Section */}
-                <div className="p-6 flex flex-col flex-1">
+                <div className="p-4 flex flex-col flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 py-0.5 bg-gray-50 rounded">
                             {product.category || 'General'}
                         </span>
                         <div className="flex items-center text-amber-400">
@@ -144,13 +144,13 @@ function ProductCard({ product }) {
                     </div>
 
                     <Link to={`/products/${product.id}`} className="block group/title">
-                        <h3 className="font-bold text-gray-900 mb-2 line-clamp-1 group-hover/title:text-purple-600 transition-colors">
+                        <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[2.75rem] text-[15px] leading-[1.4] group-hover/title:text-purple-600 transition-colors">
                             {product.name}
                         </h3>
                     </Link>
 
-                    <div className="mt-auto flex items-center justify-between pt-2">
-                        <span className="text-xl font-extrabold text-gray-900">
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-50">
+                        <span className="text-lg font-bold text-gray-900">
                             ₹{product.price?.toFixed(2)}
                         </span>
                         {userIsAdmin && (
