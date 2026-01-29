@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, ShoppingCart, Clock, Package, Users, Activity, TrendingUp, Sparkles, Box } from 'lucide-react';
-import { ordersAPI } from '../../services/api';
+import { ordersAPI, productsAPI } from '../../services/api';
 import { Link } from 'react-router-dom';
+import DashboardAlert from '../../components/admin/DashboardAlert';
 
 // Reusable Components
 import PageHeader from '../../components/admin/PageHeader';
@@ -33,6 +34,7 @@ export default function Dashboard() {
     const [recentOrders, setRecentOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [dateFilter, setDateFilter] = useState('week');
+    const [lowStockCount, setLowStockCount] = useState(0);
 
     // Load dashboard data ONCE on mount - dateFilter only affects charts, not stats
     useEffect(() => {
@@ -42,12 +44,19 @@ export default function Dashboard() {
     const loadDashboardData = async () => {
         setLoading(true);
         try {
-            const [statsRes, ordersRes] = await Promise.all([
+            const [statsRes, ordersRes, productsRes] = await Promise.all([
                 ordersAPI.getStats(),
                 ordersAPI.getAll({ limit: 5 }),
+                productsAPI.getAllAdmin(),
             ]);
+
             setStats(statsRes.data.stats);
             setRecentOrders(ordersRes.data.orders);
+
+            // Calculate low stock count (threshold < 5)
+            const lowStock = productsRes.data.products.filter(p => p.stock < 5).length;
+            setLowStockCount(lowStock);
+
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
         } finally {
@@ -157,6 +166,12 @@ export default function Dashboard() {
             <PageHeader
                 title="Dashboard"
                 subtitle="Welcome back! Here's what's happening today."
+            />
+
+            {/* Huge Alert for Low Stock / High Orders */}
+            <DashboardAlert
+                lowStockCount={lowStockCount}
+                pendingOrderCount={stats.pendingOrders > 5 ? stats.pendingOrders : 0}
             />
 
             {/* Stats Grid */}
