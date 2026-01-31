@@ -124,8 +124,10 @@ export default function ProductManagement() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.name || !formData.price) {
-            toast.error('Name and price are required');
+
+        // Validation: All fields mandatory
+        if (!formData.name || !formData.price || !formData.category || !formData.description || !formData.stock) {
+            toast.error('All fields (Name, Category, Description, Price, Stock) are required');
             return;
         }
 
@@ -158,10 +160,20 @@ export default function ProductManagement() {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Delete this product?')) return;
+    // Delete Confirmation State
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
+
+    const handleDeleteClick = (product) => {
+        setProductToDelete(product);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!productToDelete) return;
+
         try {
-            const response = await productsAPI.delete(id);
+            const response = await productsAPI.delete(productToDelete.id);
 
             // Check if it was a soft delete (archived)
             if (response.data.note) {
@@ -180,6 +192,8 @@ export default function ProductManagement() {
             }
 
             loadProducts();
+            setShowDeleteConfirm(false);
+            setProductToDelete(null);
         } catch (error) {
             toast.error('Failed to delete');
         }
@@ -389,7 +403,7 @@ export default function ProductManagement() {
                                                 <Edit2 size={16} />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(product.id)}
+                                                onClick={() => handleDeleteClick(product)}
                                                 className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                                 title="Delete"
                                             >
@@ -670,6 +684,36 @@ export default function ProductManagement() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowDeleteConfirm(false)} />
+                    <div className="relative bg-white rounded-2xl w-full max-w-sm shadow-2xl animate-scale-in p-6 text-center">
+                        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Trash2 className="text-red-500" size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-800 mb-2">Delete Product?</h3>
+                        <p className="text-slate-500 mb-6">
+                            Are you sure you want to delete <span className="font-semibold text-slate-700">"{productToDelete?.name}"</span>? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="flex-1 bg-white border-2 border-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="flex-1 bg-red-500 text-white font-bold py-3 rounded-xl hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all"
+                            >
+                                Yes, Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -151,10 +151,7 @@ export default function AdminLayout() {
                     </div>
 
                     <div className="flex items-center" style={{ gap: '8px' }}>
-                        <button className="w-9 h-9 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors flex items-center justify-center relative">
-                            <Bell size={18} />
-                            <span className="absolute w-2 h-2 bg-red-500 rounded-full" style={{ top: '6px', right: '6px' }} />
-                        </button>
+
                         <Link
                             to="/"
                             className="flex items-center h-9 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors"
