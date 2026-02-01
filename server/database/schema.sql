@@ -89,3 +89,10 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(user_id, product_id)
 );
+
+-- Categories table
+CREATE TABLE IF NOT EXISTS categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -1,24 +1,50 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Generate mock data for last 7 days
-const generateRevenueData = () => {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days.map((day, i) => ({
-        name: day,
-        revenue: Math.floor(Math.random() * 5000) + 1000,
-        orders: Math.floor(Math.random() * 20) + 5,
-    }));
+// Generate mock data based on filter
+const generateDataByFilter = (filter) => {
+    if (filter === 'today') {
+        const hours = ['9 AM', '11 AM', '1 PM', '3 PM', '5 PM', '7 PM', '9 PM'];
+        return hours.map(hour => ({
+            name: hour,
+            revenue: Math.floor(Math.random() * 2000) + 500,
+            orders: Math.floor(Math.random() * 10) + 1,
+        }));
+    } else if (filter === 'month') {
+        const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        return weeks.map(week => ({
+            name: week,
+            revenue: Math.floor(Math.random() * 15000) + 5000,
+            orders: Math.floor(Math.random() * 50) + 10,
+        }));
+    } else {
+        // Default to week
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        return days.map(day => ({
+            name: day,
+            revenue: Math.floor(Math.random() * 5000) + 1000,
+            orders: Math.floor(Math.random() * 20) + 5,
+        }));
+    }
 };
 
-export default function RevenueChart({ data = null }) {
-    const chartData = data || generateRevenueData();
+const getSubtitle = (filter) => {
+    switch (filter) {
+        case 'today': return "Today's performance";
+        case 'month': return "This month's performance";
+        default: return "Last 7 days performance";
+    }
+};
+
+export default function RevenueChart({ data = null, dateFilter = 'week' }) {
+    const chartData = data || generateDataByFilter(dateFilter);
+    const subtitle = getSubtitle(dateFilter);
 
     return (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm" style={{ padding: '20px' }}>
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h3 className="text-lg font-bold text-slate-800">Revenue Overview</h3>
-                    <p className="text-sm text-slate-500">Last 7 days performance</p>
+                    <p className="text-sm text-slate-500">{subtitle}</p>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">

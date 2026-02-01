@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+@source "../index.html";
+@source "../src";
 
 /* ========================================
    LIP Packaging - Premium Purple & Gold Theme
@@ -42,11 +43,7 @@
   --accent-dark: var(--gold-600);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+
 
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;

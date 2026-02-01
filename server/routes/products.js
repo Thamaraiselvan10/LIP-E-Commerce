@@ -259,4 +259,53 @@ router.get('/admin/all', authenticateToken, isAdmin, (req, res) => {
     }
 });
 
+// Create category (admin only)
+router.post('/categories', authenticateToken, isAdmin, (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) {
+            return res.status(400).json({ error: 'Category name is required' });
+        }
+
+        const result = db.prepare('INSERT INTO categories (name) VALUES (?)').run(name);
+        const category = db.prepare('SELECT * FROM categories WHERE id = ?').get(result.lastInsertRowid);
+
+        res.status(201).json({ message: 'Category created', category });
+    } catch (error) {
+        if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+            return res.status(400).json({ error: 'Category already exists' });
+        }
+        console.error('Create category error:', error);
+        res.status(500).json({ error: 'Failed to create category' });
+    }
+});
+
+// Get all defined categories (public/admin)
+router.get('/categories/all', (req, res) => {
+    try {
+        const categories = db.prepare('SELECT * FROM categories ORDER BY name ASC').all();
+        res.json({ categories });
+    } catch (error) {
+        console.error('Get all categories error:', error);
+        res.status(500).json({ error: 'Failed to get categories' });
+    }
+});
+
+// Delete category (admin only)
+router.delete('/categories/:id', authenticateToken, isAdmin, (req, res) => {
+    try {
+        const id = req.params.id;
+        // Optional: Check if used? For now, we allow deletion even if used in products (as products store text)
+        // But maybe we should warn? The user just asked to delete. 
+        // Let's just delete the category reference.
+
+        db.prepare('DELETE FROM categories WHERE id = ?').run(id);
+        res.json({ message: 'Category deleted' });
+    } catch (error) {
+        console.error('Delete category error:', error);
+        res.status(500).json({ error: 'Failed to delete category' });
+    }
+});
+
 module.exports = router;
+

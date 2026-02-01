@@ -68,12 +68,18 @@ router.post('/', authenticateToken, (req, res) => {
       VALUES (?, ?, ?, ?, ?)
     `);
 
+        const updateStock = db.prepare('UPDATE products SET stock = stock - ? WHERE id = ?');
+
         for (const item of items) {
+            console.log(`Processing item: ProductID=${item.productId}, Qty=${item.quantity}`);
+
             const product = db.prepare('SELECT * FROM products WHERE id = ?').get(item.productId);
             insertItem.run(orderId, item.productId, item.quantity, product.price, product.name);
 
             // Update stock
-            db.prepare('UPDATE products SET stock = stock - ? WHERE id = ?').run(item.quantity, item.productId);
+            console.log(`Updating stock for Product ${item.productId}: Deducting ${item.quantity}`);
+            const result = updateStock.run(item.quantity, item.productId);
+            console.log('Stock update result:', result);
         }
 
         // Clear user's cart

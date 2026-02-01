@@ -23,6 +23,22 @@ const seedDatabase = () => {
         console.error('Error creating admin:', error);
     }
 
+    // Seed categories
+    const categories = [
+        'Lip Boxes',
+        'Containers',
+        'Tubes',
+        'Gift Sets',
+        'Applicators'
+    ];
+
+    const insertCategory = db.prepare('INSERT OR IGNORE INTO categories (name) VALUES (?)');
+
+    for (const category of categories) {
+        insertCategory.run(category);
+    }
+    console.log('Sample categories seeded');
+
     // Seed sample products
     const products = [
         {
@@ -74,6 +90,7 @@ const seedDatabase = () => {
             stock: 150
         }
     ];
+
 
     const insertProduct = db.prepare(`
     INSERT OR IGNORE INTO products (name, description, price, category, image_url, stock)

@@ -36,6 +36,12 @@ export default function Dashboard() {
     const [dateFilter, setDateFilter] = useState('week');
     const [lowStockCount, setLowStockCount] = useState(0);
 
+    // Analytics States
+    const [products, setProducts] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+
     // Load dashboard data ONCE on mount - dateFilter only affects charts, not stats
     useEffect(() => {
         loadDashboardData();
@@ -44,14 +50,21 @@ export default function Dashboard() {
     const loadDashboardData = async () => {
         setLoading(true);
         try {
-            const [statsRes, ordersRes, productsRes] = await Promise.all([
+            const [statsRes, ordersRes, productsRes, categoriesRes] = await Promise.all([
                 ordersAPI.getStats(),
                 ordersAPI.getAll({ limit: 5 }),
                 productsAPI.getAllAdmin(),
+                productsAPI.getCategoriesList()
             ]);
 
             setStats(statsRes.data.stats);
             setRecentOrders(ordersRes.data.orders);
+            setProducts(productsRes.data.products);
+
+            const categories = categoriesRes.data.categories || [];
+            setAllCategories(categories);
+            // Default select all categories
+            setSelectedCategories(categories.map(c => c.name));
 
             // Calculate low stock count (threshold < 5)
             const lowStock = productsRes.data.products.filter(p => p.stock < 5).length;
@@ -221,7 +234,68 @@ export default function Dashboard() {
                         <div className="lg:col-span-2">
                             <RevenueChart dateFilter={dateFilter} />
                         </div>
-                        <CategoryChart dateFilter={dateFilter} />
+                        <div className="relative">
+                            {/* Category Filter Dropdown */}
+                            <div className="absolute top-4 right-4 z-10">
+                                <button
+                                    onClick={() => setShowCategoryFilter(!showCategoryFilter)}
+                                    className="p-1.5 rounded-lg text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-colors bg-white border border-slate-100 shadow-sm"
+                                    title="Filter Categories"
+                                >
+                                    <Box size={16} />
+                                </button>
+
+                                {showCategoryFilter && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setShowCategoryFilter(false)} />
+                                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-20 p-2 overflow-hidden">
+                                            <div className="text-xs font-bold text-slate-500 px-2 py-1 uppercase">Select Categories</div>
+                                            <div className="max-h-48 overflow-y-auto">
+                                                {allCategories.map(cat => (
+                                                    <label key={cat.id} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-lg cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedCategories.includes(cat.name)}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setSelectedCategories([...selectedCategories, cat.name]);
+                                                                } else {
+                                                                    setSelectedCategories(selectedCategories.filter(c => c !== cat.name));
+                                                                }
+                                                            }}
+                                                            className="rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+                                                        />
+                                                        <span className="text-sm text-slate-700">{cat.name}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            <CategoryChart
+                                data={(() => {
+                                    // 1. Filter products by selected categories
+                                    const filtered = products.filter(p => selectedCategories.includes(p.category));
+
+                                    // 2. Count occurrences
+                                    const counts = {};
+                                    filtered.forEach(p => {
+                                        const cat = p.category || 'Uncategorized';
+                                        counts[cat] = (counts[cat] || 0) + 1;
+                                    });
+
+                                    // 3. Format for chart
+                                    const colors = ['#8b5cf6', '#6366f1', '#3b82f6', '#06b6d4', '#fbbf24', '#f59e0b', '#ec4899', '#10b981'];
+                                    return Object.keys(counts).map((key, index) => ({
+                                        name: key,
+                                        value: counts[key],
+                                        color: colors[index % colors.length]
+                                    }));
+                                })()}
+                            />
+                        </div>
                     </div>
                 )}
             </div>
@@ -239,7 +313,7 @@ export default function Dashboard() {
                     />
                 </div>
 
-                {/* Side Panel - Quick Actions & Store Health */}
+                {/* Side Panel - Quick Actions */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {/* Quick Actions Card */}
                     <div className="bg-gradient-to-br from-slate-900 to-purple-900 rounded-2xl text-white relative overflow-hidden" style={{ padding: '20px' }}>
@@ -264,33 +338,6 @@ export default function Dashboard() {
                                     <TrendingUp size={18} className="text-green-300" />
                                     <span className="text-sm font-medium">Create Promo</span>
                                 </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Store Health */}
-                    <div className="bg-white rounded-2xl border border-slate-100" style={{ padding: '20px' }}>
-                        <h3 className="font-bold text-slate-800" style={{ marginBottom: '9px' }}>Store Health</h3>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div className="flex items-center justify-between" style={{ padding: '8px 0' }}>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                                        <Users size={18} className="text-indigo-600" />
-                                    </div>
-                                    <span className="text-sm text-slate-600">Customers</span>
-                                </div>
-                                <span className="font-bold text-slate-800">{stats.totalUsers}</span>
-                            </div>
-
-                            <div className="flex items-center justify-between" style={{ padding: '8px 0' }}>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-fuchsia-50 flex items-center justify-center">
-                                        <Activity size={18} className="text-fuchsia-600" />
-                                    </div>
-                                    <span className="text-sm text-slate-600">Conversion</span>
-                                </div>
-                                <span className="font-bold text-slate-800">2.4%</span>
                             </div>
                         </div>
                     </div>
