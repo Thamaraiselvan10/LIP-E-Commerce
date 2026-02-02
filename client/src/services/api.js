@@ -53,7 +53,7 @@ export const productsAPI = {
         headers: { 'Content-Type': 'multipart/form-data' },
     }),
     // Categories
-    createCategory: (name) => api.post('/products/categories', { name }),
+    createCategory: (name, parentId = null) => api.post('/products/categories', { name, parent_id: parentId }),
     getCategoriesList: () => api.get('/products/categories/all'),
     deleteCategory: (id) => api.delete(`/products/categories/${id}`),
     update: (id, formData) => api.put(`/products/${id}`, formData, {

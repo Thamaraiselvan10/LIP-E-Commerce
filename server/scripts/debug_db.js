@@ -1,4 +1,4 @@
-const db = require('./server/database/db');
+const db = require('../database/db');
 
 const products = db.prepare('SELECT id, name FROM products').all();
 console.log('Products:', products);

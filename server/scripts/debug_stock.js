@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const dbPath = path.join(__dirname, 'server/database/ecommerce.db');
+const dbPath = path.join(__dirname, '../database/ecommerce.db');
 const db = new Database(dbPath);
 
 function runTest() {

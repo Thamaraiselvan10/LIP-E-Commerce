@@ -44,10 +44,67 @@ const sidebarVariants = {
     }
 };
 
+const CategoryItem = ({ category, currentCategoryId, onCategoryChange, categoryCounts, isMobile = false, level = 0 }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const hasChildren = category.children && category.children.length > 0;
+    const isActive = parseInt(currentCategoryId) === category.id;
+
+    const toggleExpand = (e) => {
+        e.stopPropagation();
+        setIsExpanded(!isExpanded);
+    };
+
+    return (
+        <div className="flex flex-col w-full" style={{ gap: '4px' }}>
+            <button
+                onClick={() => onCategoryChange(category.id, category.name)}
+                className={`flex items-center justify-between w-full text-left rounded-xl transition-all ${isActive
+                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
+                    : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                    }`}
+                style={{ padding: `12px 16px 12px ${16 + level * 16}px` }}
+            >
+                <div className="flex items-center" style={{ gap: '8px' }}>
+                    {hasChildren && (
+                        <motion.div
+                            animate={{ rotate: isExpanded ? 90 : 0 }}
+                            onClick={toggleExpand}
+                            className="p-1 hover:bg-black/5 rounded-md transition-colors"
+                        >
+                            <ChevronRight size={14} />
+                        </motion.div>
+                    )}
+                    <span className="font-semibold text-sm">{category.name}</span>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-lg ${isActive ? 'bg-white/20' : 'bg-gray-100'}`}>
+                    {categoryCounts[category.id] || 0}
+                </span>
+            </button>
+
+            {hasChildren && isExpanded && (
+                <div className="flex flex-col" style={{ gap: '4px' }}>
+                    {category.children.map((child) => (
+                        <CategoryItem
+                            key={child.id}
+                            category={child}
+                            currentCategoryId={currentCategoryId}
+                            onCategoryChange={onCategoryChange}
+                            categoryCounts={categoryCounts}
+                            isMobile={isMobile}
+                            level={level + 1}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default function Products() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [products, setProducts] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
@@ -57,26 +114,38 @@ export default function Products() {
     const { isAuthenticated } = useAuthStore();
 
     // Get current category from URL
+    const currentCategoryId = searchParams.get('categoryId') || '';
     const currentCategory = searchParams.get('category') || '';
     const currentSearch = searchParams.get('search') || '';
     const currentSortBy = searchParams.get('sortBy') || 'newest';
 
-    // Categories with their display names
-    const categories = useMemo(() => [
-        { key: '', label: 'All Products' },
-        { key: 'boxes', label: 'Boxes' },
-        { key: 'covers', label: 'Covers' },
-        { key: 'tapes', label: 'Tapes' },
-    ], []);
-
     // Calculate category counts from all products
     const categoryCounts = useMemo(() => {
-        const counts = { '': allProducts.length };
-        categories.forEach(cat => {
-            if (cat.key) {
-                counts[cat.key] = allProducts.filter(p => p.category === cat.key).length;
+        const counts = {};
+
+        // 1. Get direct counts for all categories
+        const directCounts = {};
+        allProducts.forEach(p => {
+            if (p.category_id) {
+                directCounts[p.category_id] = (directCounts[p.category_id] || 0) + 1;
             }
         });
+
+        // 2. Recursive function to aggregate child counts into parents
+        const getAggregateCount = (cat) => {
+            let total = directCounts[cat.id] || 0;
+            if (cat.children && cat.children.length > 0) {
+                cat.children.forEach(child => {
+                    total += getAggregateCount(child);
+                });
+            }
+            counts[cat.id] = total;
+            return total;
+        };
+
+        categories.forEach(cat => getAggregateCount(cat));
+
+        counts[''] = allProducts.length; // Total count
         return counts;
     }, [allProducts, categories]);
 
@@ -85,21 +154,25 @@ export default function Products() {
         if (isAuthenticated) {
             fetchWishlist();
         }
-        const loadAllProducts = async () => {
+        const loadInitialData = async () => {
             try {
-                const response = await productsAPI.getAll({});
-                setAllProducts(response.data.products || []);
+                const [productsRes, categoriesRes] = await Promise.all([
+                    productsAPI.getAll({}),
+                    productsAPI.getCategoriesList()
+                ]);
+                setAllProducts(productsRes.data.products || []);
+                setCategories(categoriesRes.data.categories || []);
             } catch (err) {
-                console.error('Failed to load all products:', err);
+                console.error('Failed to load initial data:', err);
             }
         };
-        loadAllProducts();
+        loadInitialData();
     }, []);
 
     // Load filtered products when URL params change
     useEffect(() => {
         loadProducts();
-    }, [currentCategory, currentSearch, currentSortBy]);
+    }, [currentCategory, currentCategoryId, currentSearch, currentSortBy]);
 
     const loadProducts = async () => {
         setLoading(true);
@@ -108,6 +181,7 @@ export default function Products() {
             const params = {
                 search: currentSearch,
                 category: currentCategory,
+                categoryId: currentCategoryId,
                 sortBy: currentSortBy,
             };
 
@@ -122,11 +196,13 @@ export default function Products() {
         }
     };
 
-    const handleCategoryChange = useCallback((category) => {
+    const handleCategoryChange = useCallback((categoryId, label) => {
         const params = new URLSearchParams(searchParams);
-        if (category) {
-            params.set('category', category);
+        if (categoryId) {
+            params.set('categoryId', categoryId);
+            params.set('category', label);
         } else {
+            params.delete('categoryId');
             params.delete('category');
         }
         setSearchParams(params);
@@ -181,24 +257,32 @@ export default function Products() {
                                     Categories
                                 </h4>
                                 <nav className="flex flex-col" style={{ gap: '6px' }}>
-                                    {categories.map((cat) => (
-                                        <button
-                                            key={cat.key}
-                                            onClick={() => handleCategoryChange(cat.key)}
-                                            className={`flex items-center justify-between w-full text-left rounded-xl transition-all ${currentCategory === cat.key
-                                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
-                                                : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
-                                                }`}
-                                            style={{ padding: '12px 16px' }}
-                                        >
-                                            <span className="font-semibold text-sm">
-                                                {cat.label}
-                                            </span>
-                                            <span className={`text-xs px-2 py-1 rounded-lg ${currentCategory === cat.key ? 'bg-white/20' : 'bg-gray-100'}`}>
-                                                {categoryCounts[cat.key] || 0}
-                                            </span>
-                                        </button>
-                                    ))}
+                                    <button
+                                        onClick={() => handleCategoryChange('', '')}
+                                        className={`flex items-center justify-between w-full text-left rounded-xl transition-all ${!currentCategoryId
+                                            ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
+                                            : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                                            }`}
+                                        style={{ padding: '12px 16px', marginBottom: '8px' }}
+                                    >
+                                        <span className="font-semibold text-sm">All Products</span>
+                                        <span className={`text-xs px-2 py-1 rounded-lg ${!currentCategoryId ? 'bg-white/20' : 'bg-gray-100'}`}>
+                                            {allProducts.length}
+                                        </span>
+                                    </button>
+
+                                    {categories
+                                        .filter(cat => !cat.parent_id) // Only root level
+                                        .sort((a, b) => a.id - b.id)  // Preserve desired order (1-5)
+                                        .map((cat) => (
+                                            <CategoryItem
+                                                key={cat.id}
+                                                category={cat}
+                                                currentCategoryId={currentCategoryId}
+                                                onCategoryChange={handleCategoryChange}
+                                                categoryCounts={categoryCounts}
+                                            />
+                                        ))}
                                 </nav>
                             </div>
 
@@ -226,10 +310,7 @@ export default function Products() {
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between" style={{ marginBottom: '32px', gap: '20px' }}>
                             <div>
                                 <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight" style={{ marginBottom: '4px' }}>
-                                    {currentCategory
-                                        ? categories.find(c => c.key === currentCategory)?.label || 'Products'
-                                        : 'All Collection'
-                                    }
+                                    {currentCategory ? currentCategory : 'All Collection'}
                                 </h1>
                                 <p className="text-gray-500 font-medium">
                                     {loading ? 'Discovering products...' : `Explore ${products.length} premium packaging solutions`}
@@ -282,20 +363,30 @@ export default function Products() {
                                     <h3 className="text-lg font-bold text-gray-900" style={{ marginBottom: '20px' }}>
                                         Categories
                                     </h3>
-                                    <div className="flex flex-wrap" style={{ gap: '10px' }}>
-                                        {categories.map((cat) => (
-                                            <button
-                                                key={cat.key}
-                                                onClick={() => handleCategoryChange(cat.key)}
-                                                className={`rounded-xl font-bold transition-all ${currentCategory === cat.key
-                                                    ? 'bg-purple-600 text-white shadow-lg'
-                                                    : 'bg-gray-100 text-gray-600'
-                                                    }`}
-                                                style={{ padding: '12px 20px', fontSize: '13px' }}
-                                            >
-                                                {cat.label}
-                                            </button>
-                                        ))}
+                                    <div className="flex flex-col" style={{ gap: '6px' }}>
+                                        <button
+                                            onClick={() => handleCategoryChange('', '')}
+                                            className={`rounded-xl font-bold transition-all text-left ${!currentCategoryId
+                                                ? 'bg-purple-600 text-white shadow-lg'
+                                                : 'bg-gray-100 text-gray-600'
+                                                }`}
+                                            style={{ padding: '12px 20px', fontSize: '13px' }}
+                                        >
+                                            All Products
+                                        </button>
+                                        {categories
+                                            .filter(cat => !cat.parent_id)
+                                            .sort((a, b) => a.id - b.id)
+                                            .map((cat) => (
+                                                <CategoryItem
+                                                    key={cat.id}
+                                                    category={cat}
+                                                    currentCategoryId={currentCategoryId}
+                                                    onCategoryChange={handleCategoryChange}
+                                                    categoryCounts={categoryCounts}
+                                                    isMobile
+                                                />
+                                            ))}
                                     </div>
                                 </motion.div>
                             )}

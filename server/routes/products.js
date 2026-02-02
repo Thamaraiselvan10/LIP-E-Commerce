@@ -40,12 +40,26 @@ const upload = multer({
 // Get all products (public)
 router.get('/', optionalAuth, (req, res) => {
     try {
-        const { category, search, minPrice, maxPrice, sortBy } = req.query;
+        const { category, categoryId, search, minPrice, maxPrice, sortBy } = req.query;
 
         let query = 'SELECT * FROM products WHERE is_active = 1';
         const params = [];
 
-        if (category) {
+        if (categoryId) {
+            // Recursive check for all children categories
+            const getDescendantIds = (parentId) => {
+                const ids = [parentId];
+                const children = db.prepare('SELECT id FROM categories WHERE parent_id = ?').all(parentId);
+                for (const child of children) {
+                    ids.push(...getDescendantIds(child.id));
+                }
+                return ids;
+            };
+
+            const allCategoryIds = getDescendantIds(parseInt(categoryId));
+            query += ` AND category_id IN (${allCategoryIds.map(() => '?').join(',')})`;
+            params.push(...allCategoryIds);
+        } else if (category) {
             query += ' AND category = ?';
             params.push(category);
         }
@@ -121,7 +135,7 @@ router.get('/:id', optionalAuth, (req, res) => {
 // Create product (admin only)
 router.post('/', authenticateToken, isAdmin, upload.single('image'), (req, res) => {
     try {
-        const { name, description, price, category, stock } = req.body;
+        const { name, description, price, category, category_id, stock } = req.body;
 
         if (!name || !price) {
             return res.status(400).json({ error: 'Name and price are required' });
@@ -130,9 +144,9 @@ router.post('/', authenticateToken, isAdmin, upload.single('image'), (req, res) 
         const imageUrl = req.file ? `/uploads/products/${req.file.filename}` : null;
 
         const result = db.prepare(`
-      INSERT INTO products (name, description, price, category, image_url, stock)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(name, description || '', parseFloat(price), category || null, imageUrl, parseInt(stock) || 0);
+      INSERT INTO products (name, description, price, category, category_id, image_url, stock)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(name, description || '', parseFloat(price), category || null, category_id || null, imageUrl, parseInt(stock) || 0);
 
         const product = db.prepare('SELECT * FROM products WHERE id = ?').get(result.lastInsertRowid);
         res.status(201).json({ message: 'Product created', product });
@@ -145,7 +159,7 @@ router.post('/', authenticateToken, isAdmin, upload.single('image'), (req, res) 
 // Update product (admin only)
 router.put('/:id', authenticateToken, isAdmin, upload.single('image'), (req, res) => {
     try {
-        const { name, description, price, category, stock, is_active } = req.body;
+        const { name, description, price, category, category_id, stock, is_active } = req.body;
         const productId = req.params.id;
 
         // Check if product exists
@@ -168,7 +182,7 @@ router.put('/:id', authenticateToken, isAdmin, upload.single('image'), (req, res
 
         db.prepare(`
       UPDATE products SET 
-        name = ?, description = ?, price = ?, category = ?, 
+        name = ?, description = ?, price = ?, category = ?, category_id = ?, 
         image_url = ?, stock = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(
@@ -176,6 +190,7 @@ router.put('/:id', authenticateToken, isAdmin, upload.single('image'), (req, res
             description ?? existingProduct.description,
             price ? parseFloat(price) : existingProduct.price,
             category ?? existingProduct.category,
+            category_id ?? existingProduct.category_id,
             imageUrl,
             stock !== undefined ? parseInt(stock) : existingProduct.stock,
             is_active !== undefined ? (is_active === 'true' || is_active === true ? 1 : 0) : existingProduct.is_active,
@@ -262,12 +277,12 @@ router.get('/admin/all', authenticateToken, isAdmin, (req, res) => {
 // Create category (admin only)
 router.post('/categories', authenticateToken, isAdmin, (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, parent_id } = req.body;
         if (!name) {
             return res.status(400).json({ error: 'Category name is required' });
         }
 
-        const result = db.prepare('INSERT INTO categories (name) VALUES (?)').run(name);
+        const result = db.prepare('INSERT INTO categories (name, parent_id) VALUES (?, ?)').run(name, parent_id || null);
         const category = db.prepare('SELECT * FROM categories WHERE id = ?').get(result.lastInsertRowid);
 
         res.status(201).json({ message: 'Category created', category });
@@ -280,11 +295,28 @@ router.post('/categories', authenticateToken, isAdmin, (req, res) => {
     }
 });
 
-// Get all defined categories (public/admin)
+// Get all defined categories (public/admin) - returns as tree
 router.get('/categories/all', (req, res) => {
     try {
-        const categories = db.prepare('SELECT * FROM categories ORDER BY name ASC').all();
-        res.json({ categories });
+        const categories = db.prepare('SELECT * FROM categories ORDER BY id ASC').all();
+
+        // Build hierarchy
+        const categoryMap = {};
+        const tree = [];
+
+        categories.forEach(cat => {
+            categoryMap[cat.id] = { ...cat, children: [] };
+        });
+
+        categories.forEach(cat => {
+            if (cat.parent_id && categoryMap[cat.parent_id]) {
+                categoryMap[cat.parent_id].children.push(categoryMap[cat.id]);
+            } else {
+                tree.push(categoryMap[cat.id]);
+            }
+        });
+
+        res.json({ categories: tree });
     } catch (error) {
         console.error('Get all categories error:', error);
         res.status(500).json({ error: 'Failed to get categories' });

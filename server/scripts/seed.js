@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('../database/db');
 const bcrypt = require('bcryptjs');
 
 const seedDatabase = () => {

@@ -28,11 +28,26 @@ export default function ProductManagement() {
         description: '',
         price: '',
         category: '',
+        category_id: '',
         stock: '',
         image: null,
         is_active: true,
     });
     const [imagePreview, setImagePreview] = useState(null);
+    const [parentCategoryId, setParentCategoryId] = useState('');
+
+    const getFlattenedCategories = (cats, prefix = '', result = []) => {
+        cats.forEach(cat => {
+            const currentPath = prefix ? `${prefix} > ${cat.name}` : cat.name;
+            result.push({ ...cat, flatName: currentPath });
+            if (cat.children && cat.children.length > 0) {
+                getFlattenedCategories(cat.children, currentPath, result);
+            }
+        });
+        return result;
+    };
+
+    const flatCategories = getFlattenedCategories(categories);
 
     useEffect(() => {
         loadData();
@@ -77,6 +92,7 @@ export default function ProductManagement() {
             description: '',
             price: '',
             category: '',
+            category_id: '',
             stock: '',
             image: null,
             is_active: true,
@@ -93,6 +109,7 @@ export default function ProductManagement() {
                 description: product.description || '',
                 price: product.price,
                 category: product.category || '',
+                category_id: product.category_id || '',
                 stock: product.stock,
                 image: null,
                 is_active: product.is_active === 1 || product.is_active === true,
@@ -137,6 +154,7 @@ export default function ProductManagement() {
         data.append('description', formData.description);
         data.append('price', formData.price);
         data.append('category', formData.category);
+        data.append('category_id', formData.category_id);
         data.append('stock', formData.stock || 0);
         data.append('is_active', formData.is_active); // Send boolean/string, backend handles it
         if (formData.image) {
@@ -204,9 +222,10 @@ export default function ProductManagement() {
         if (!newCategoryName.trim()) return;
 
         try {
-            await productsAPI.createCategory(newCategoryName);
+            await productsAPI.createCategory(newCategoryName, parentCategoryId || null);
             toast.success('Category created successfully');
             setNewCategoryName('');
+            setParentCategoryId('');
             setShowCategoryModal(false);
             loadCategories();
         } catch (error) {
@@ -245,7 +264,40 @@ export default function ProductManagement() {
     const filteredProducts = products.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
             p.category?.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+
+        let matchesCategory = selectedCategory === 'All';
+        if (!matchesCategory) {
+            // Find the selected category and its descendants
+            const findDescendants = (cats, targetId) => {
+                for (const cat of cats) {
+                    if (cat.id === parseInt(targetId)) {
+                        const ids = [cat.id];
+                        const getIds = (c) => {
+                            if (c.children) {
+                                c.children.forEach(child => {
+                                    ids.push(child.id);
+                                    getIds(child);
+                                });
+                            }
+                        };
+                        getIds(cat);
+                        return ids;
+                    }
+                    if (cat.children) {
+                        const result = findDescendants(cat.children, targetId);
+                        if (result) return result;
+                    }
+                }
+                return null;
+            };
+
+            const targetCategory = flatCategories.find(c => c.name === selectedCategory);
+            if (targetCategory) {
+                const descendantIds = findDescendants(categories, targetCategory.id);
+                matchesCategory = descendantIds?.includes(p.category_id);
+            }
+        }
+
         return matchesSearch && matchesCategory;
     });
 
@@ -313,11 +365,11 @@ export default function ProductManagement() {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="appearance-none pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all cursor-pointer h-9"
+                            className="appearance-none pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all cursor-pointer h-9 w-full md:w-48 truncate"
                         >
                             <option value="All">All Categories</option>
-                            {categories.map(cat => (
-                                <option key={cat.id} value={cat.name}>{cat.name}</option>
+                            {flatCategories.map(cat => (
+                                <option key={cat.id} value={cat.name}>{cat.flatName}</option>
                             ))}
                         </select>
                         <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -368,8 +420,8 @@ export default function ProductManagement() {
                                         </div>
                                     </td>
                                     <td style={{ padding: '8px 16px' }}>
-                                        <span className="inline-block px-2 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
-                                            {product.category || 'Uncategorized'}
+                                        <span className="inline-block px-2 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200 max-w-[150px] truncate" title={flatCategories.find(c => c.id === product.category_id)?.flatName || product.category}>
+                                            {flatCategories.find(c => c.id === product.category_id)?.flatName || product.category || 'Uncategorized'}
                                         </span>
                                     </td>
                                     <td style={{ padding: '8px 16px' }}>
@@ -438,15 +490,32 @@ export default function ProductManagement() {
                             </button>
                         </div>
                         <form onSubmit={handleCreateCategory}>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Category Name</label>
-                            <input
-                                type="text"
-                                value={newCategoryName}
-                                onChange={(e) => setNewCategoryName(e.target.value)}
-                                placeholder="e.g. Lip Gloss"
-                                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
-                                autoFocus
-                            />
+                            <div style={{ marginBottom: '16px' }}>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Category Name</label>
+                                <input
+                                    type="text"
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    placeholder="e.g. Lip Gloss"
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2"
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '24px' }}>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Parent Category (Optional)</label>
+                                <select
+                                    value={parentCategoryId}
+                                    onChange={(e) => setParentCategoryId(e.target.value)}
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                    <option value="">No Parent (Top Level)</option>
+                                    {flatCategories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.flatName}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <button
                                 type="submit"
                                 className="w-full bg-purple-600 text-white font-semibold py-2.5 rounded-xl hover:bg-purple-700 transition"
@@ -474,18 +543,22 @@ export default function ProductManagement() {
                                 <p className="text-center text-slate-500 py-4">No categories created yet.</p>
                             ) : (
                                 categories.map((cat) => (
-                                    <div key={cat.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                                        <div>
-                                            <span className="font-medium text-slate-700 block">{cat.name}</span>
-                                            <span className="text-xs text-slate-400">ID: {cat.id}</span>
+                                    <div key={cat.id} className="flex flex-col p-3 bg-slate-50 rounded-xl" style={{ gap: '4px' }}>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <span className="font-medium text-slate-700 block">
+                                                    {flatCategories.find(c => c.id === cat.id)?.flatName}
+                                                </span>
+                                                <span className="text-xs text-slate-400">ID: {cat.id} {cat.parent_id && `(Parent: ${cat.parent_id})`}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDeleteCategory(cat.id)}
+                                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Delete Category"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={() => handleDeleteCategory(cat.id)}
-                                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Delete Category"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
                                     </div>
                                 ))
                             )}
@@ -567,20 +640,29 @@ export default function ProductManagement() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700" style={{ marginBottom: '6px' }}>
-                                        Category
+                                        Category <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <select
-                                            name="category"
-                                            value={formData.category}
-                                            onChange={handleChange}
+                                            name="category_id"
+                                            value={formData.category_id}
+                                            onChange={(e) => {
+                                                const catId = e.target.value;
+                                                const cat = flatCategories.find(c => c.id === parseInt(catId));
+                                                setFormData({
+                                                    ...formData,
+                                                    category_id: catId,
+                                                    category: cat ? cat.name : ''
+                                                });
+                                            }}
                                             className="w-full bg-white border-b border-gray-200 focus:border-purple-500 outline-none text-gray-800 transition-colors appearance-none cursor-pointer text-sm"
                                             style={{ padding: '8px 0' }}
+                                            required
                                         >
                                             <option value="">Select Category</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat.id} value={cat.name}>
-                                                    {cat.name}
+                                            {flatCategories.map((cat) => (
+                                                <option key={cat.id} value={cat.id}>
+                                                    {cat.flatName}
                                                 </option>
                                             ))}
                                         </select>

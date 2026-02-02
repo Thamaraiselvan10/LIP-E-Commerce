@@ -14,6 +14,7 @@ async function testLogin(email, password, role) {
         if (response.ok) {
             console.log(`SUCCESS: ${role} login successful.`);
             console.log('User data:', data.user);
+            console.log('User data:', data.user);
 
             // Test Protected Route (Cart)
             const token = data.token;

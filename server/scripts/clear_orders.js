@@ -1,4 +1,4 @@
-const db = require('./server/database/db');
+const db = require('../database/db');
 
 console.log('Clearing orders and order_items...');
 db.prepare('DELETE FROM order_items').run();

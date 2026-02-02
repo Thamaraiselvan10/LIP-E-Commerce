@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT,
   price REAL NOT NULL,
   category TEXT,
+  category_id INTEGER REFERENCES categories(id),
   image_url TEXT,
   stock INTEGER DEFAULT 0,
   is_active INTEGER DEFAULT 1,
@@ -93,6 +94,8 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
 -- Categories table
 CREATE TABLE IF NOT EXISTS categories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  name TEXT NOT NULL,
+  parent_id INTEGER REFERENCES categories(id),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(name, parent_id)
 );

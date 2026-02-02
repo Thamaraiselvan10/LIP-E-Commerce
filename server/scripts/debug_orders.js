@@ -1,4 +1,4 @@
-const db = require('./server/database/db');
+const db = require('../database/db');
 
 const orderCount = db.prepare('SELECT count(*) as count FROM orders').get().count;
 console.log('Order Count:', orderCount);

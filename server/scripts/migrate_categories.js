@@ -1,4 +1,4 @@
-const db = require('./server/database/db');
+const db = require('../database/db');
 
 console.log('Running migration: Create categories table');
 

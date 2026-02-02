@@ -81,18 +81,6 @@ export default function Header() {
         }
     };
 
-    const handleCategoryClick = (category) => {
-        const params = new URLSearchParams(searchParams);
-        if (category) {
-            params.set('category', category);
-        } else {
-            params.delete('category');
-        }
-        // Clear search when changing category
-        params.delete('search');
-        setSearchQuery('');
-        setSearchParams(params);
-    };
 
     const navLinks = [
         { to: '/', label: 'Home' },
@@ -100,12 +88,6 @@ export default function Header() {
         { to: '/contact', label: 'Contact' },
     ];
 
-    const categoryPills = [
-        { key: '', label: 'All Categories' },
-        { key: 'boxes', label: 'Boxes' },
-        { key: 'covers', label: 'Covers' },
-        { key: 'tapes', label: 'Tapes' },
-    ];
 
     const currentCategory = searchParams.get('category') || '';
 
@@ -443,26 +425,6 @@ export default function Header() {
                     </div>
                 </div>
 
-                {/* Navigation Bar with Categories */}
-                <div className="bg-purple-50 border-t border-purple-100">
-                    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
-                        <div className="flex items-center overflow-x-auto scrollbar-hide" style={{ gap: '8px', padding: '12px 0' }}>
-                            {categoryPills.map((pill) => (
-                                <button
-                                    key={pill.key}
-                                    onClick={() => handleCategoryClick(pill.key)}
-                                    className={`whitespace-nowrap font-medium transition-all rounded-lg ${currentCategory === pill.key
-                                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
-                                        : 'bg-white text-gray-600 border border-gray-200 hover:border-purple-300 hover:text-purple-600'
-                                        }`}
-                                    style={{ padding: '10px 20px' }}
-                                >
-                                    {pill.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (

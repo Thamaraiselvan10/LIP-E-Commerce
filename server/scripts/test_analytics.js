@@ -1,4 +1,4 @@
-const db = require('./server/database/db');
+const db = require('../database/db');
 
 console.log('--- Order Stats Analytics Debug ---');
 
