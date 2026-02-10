@@ -45,16 +45,14 @@ export default function OrderManagement() {
         }
     };
 
-    const statusOptions = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+    const statusOptions = ['pending', 'processing', 'shipped', 'delivered'];
 
     const getStatusBadge = (status) => {
         const styles = {
             pending: 'bg-amber-100 text-amber-700 border-amber-200',
-            confirmed: 'bg-blue-100 text-blue-700 border-blue-200',
             processing: 'bg-indigo-100 text-indigo-700 border-indigo-200',
             shipped: 'bg-purple-100 text-purple-700 border-purple-200',
             delivered: 'bg-green-100 text-green-700 border-green-200',
-            cancelled: 'bg-red-50 text-red-600 border-red-200',
         };
         return styles[status] || 'bg-slate-100 text-slate-600 border-slate-200';
     };
@@ -103,23 +101,6 @@ export default function OrderManagement() {
                             placeholder="Search by order ID, customer..."
                             className="w-full sm:w-80"
                         />
-                        {/* Status Filter */}
-                        <div className="relative group min-w-[180px]">
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                <ChevronDown size={14} />
-                            </div>
-                            <select
-                                value={filter}
-                                onChange={(e) => setFilter(e.target.value)}
-                                style={{ padding: '10px 36px 10px 16px', height: '42px' }}
-                                className="appearance-none w-full bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500/20 hover:border-purple-300 transition-all capitalize"
-                            >
-                                <option value="all">All Statuses</option>
-                                {statusOptions.map(status => (
-                                    <option key={status} value={status} className="capitalize">{status}</option>
-                                ))}
-                            </select>
-                        </div>
                     </div>
                     <div className="text-sm font-medium text-slate-400 whitespace-nowrap">
                         Showing {orders.filter(o => {
@@ -255,7 +236,7 @@ export default function OrderManagement() {
                         </div>
 
                         {/* Modal Content */}
-                        <div style={{ padding: '16px 20px' }}>
+                        <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 {/* Status Update */}
                                 <div style={{ padding: '12px 16px' }} className="bg-slate-50 rounded-xl border border-slate-100">
@@ -305,23 +286,23 @@ export default function OrderManagement() {
                                     <h3 style={{ marginBottom: '8px' }} className="text-sm font-bold text-slate-700 uppercase tracking-wide">
                                         Order Items ({selectedOrder.items?.length || 0})
                                     </h3>
-                                    <div className="border border-slate-200 rounded-xl overflow-hidden">
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                                         {selectedOrder.items?.map((item, i) => (
                                             <div
                                                 key={i}
-                                                style={{ padding: '12px 14px', borderBottom: i !== selectedOrder.items.length - 1 ? '1px solid #e2e8f0' : 'none' }}
-                                                className="flex items-center justify-between"
+                                                style={{ padding: '12px 14px' }}
+                                                className="border border-slate-200 rounded-xl flex items-center justify-between"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
+                                                    <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0">
                                                         <Package size={18} />
                                                     </div>
-                                                    <div>
-                                                        <p className="font-semibold text-slate-800">{item.name}</p>
+                                                    <div className="min-w-0">
+                                                        <p className="font-semibold text-slate-800 text-sm truncate">{item.name}</p>
                                                         <p className="text-xs text-slate-400">Qty: {item.quantity} × ₹{item.price?.toFixed(2)}</p>
                                                     </div>
                                                 </div>
-                                                <span className="font-bold text-slate-800">₹{(item.price * item.quantity).toFixed(2)}</span>
+                                                <span className="font-bold text-slate-800 text-sm flex-shrink-0 ml-2">₹{(item.price * item.quantity).toFixed(2)}</span>
                                             </div>
                                         ))}
                                     </div>
