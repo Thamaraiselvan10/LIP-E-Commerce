@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Eye, X, Loader2, Bell, MessageSquare, Megaphone, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, X, Loader2, Bell, MessageSquare, Megaphone, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
 import { announcementsAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import PageHeader from '../../components/admin/PageHeader';
@@ -294,7 +294,7 @@ export default function AnnouncementManagement() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 <label className="text-sm font-semibold text-slate-700">Type</label>
                                 <div className="flex bg-slate-100 rounded-xl" style={{ padding: '6px' }}>
-                                    {['toast', 'popup', 'both'].map(type => (
+                                    {['toast', 'popup'].map(type => (
                                         <button
                                             key={type}
                                             type="button"
@@ -341,26 +341,83 @@ export default function AnnouncementManagement() {
 
             {/* Preview Modal */}
             {showPreview && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Backdrop */}
                     <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowPreview(null)} />
 
-                    <div className="relative bg-white rounded-3xl w-full max-w-sm p-8 text-center shadow-2xl animate-scale-in">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 to-amber-500" />
+                    {/* Preview Content */}
+                    {showPreview.type === 'popup' ? (
+                        <div className="relative z-50 w-full flex items-center justify-center p-4">
+                            <div className="bg-white rounded-3xl w-full text-center animate-scale-in shadow-2xl relative overflow-hidden" style={{ maxWidth: '400px', padding: '32px' }}>
+                                {/* Decorative Elements */}
+                                <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
+                                <div className="absolute bottom-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl translate-x-1/2 translate-y-1/2"></div>
 
-                        <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <Megaphone className="text-purple-600" size={32} />
+                                <button
+                                    onClick={() => setShowPreview(null)}
+                                    className="absolute text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+                                    style={{ top: '16px', right: '16px', padding: '8px' }}
+                                >
+                                    <X size={20} />
+                                </button>
+
+                                <div className="relative z-10">
+                                    <div
+                                        className="w-20 h-20 bg-gradient-to-r from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center shadow-xl shadow-purple-500/30 animate-float"
+                                        style={{ margin: '0 auto 24px' }}
+                                    >
+                                        <Sparkles className="text-white" size={36} />
+                                    </div>
+
+                                    <h2 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '12px' }}>{showPreview.title}</h2>
+                                    <p className="text-gray-600" style={{ marginBottom: '32px' }}>{showPreview.message}</p>
+
+                                    <button
+                                        onClick={() => setShowPreview(null)}
+                                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl shadow-lg shadow-purple-500/30 transition-all"
+                                        style={{ padding: '16px' }}
+                                    >
+                                        Got it!
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-
-                        <h3 className="text-xl font-bold text-slate-900 mb-3">{showPreview.title}</h3>
-                        <p className="text-slate-600 mb-8 leading-relaxed">{showPreview.message}</p>
-
-                        <button
-                            onClick={() => setShowPreview(null)}
-                            className="w-full btn btn-primary py-3 rounded-xl shadow-lg shadow-purple-500/20"
-                        >
-                            Close Preview
-                        </button>
-                    </div>
+                    ) : (
+                        <div className="fixed left-0 right-0 z-50 toast-enter" style={{ top: '80px' }}>
+                            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }}>
+                                <div
+                                    className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white rounded-2xl shadow-xl shadow-purple-500/20 flex items-center justify-between"
+                                    style={{ padding: '14px 24px' }}
+                                >
+                                    <div className="flex items-center" style={{ gap: '16px' }}>
+                                        <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <Sparkles size={16} className="text-amber-300" />
+                                        </div>
+                                        <div className="flex items-center flex-wrap" style={{ gap: '8px' }}>
+                                            <span className="font-bold">{showPreview.title}</span>
+                                            <span className="text-purple-200">—</span>
+                                            <span className="text-purple-100">{showPreview.message}</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowPreview(null)}
+                                        className="hover:bg-white/20 rounded-xl transition-colors flex-shrink-0"
+                                        style={{ padding: '8px', marginLeft: '16px' }}
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="text-center mt-4">
+                                <button
+                                    onClick={() => setShowPreview(null)}
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm transition-all text-sm font-medium"
+                                >
+                                    Close Preview
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
